@@ -2,18 +2,18 @@
 
 Production loop:
 
-   teach   reviews/<part>.json + images  -> inspection_memory.db
+   train   reviews/<part>.json + images  -> inspection_memory.db
    build   inspection_memory.db          -> models/best.pt
     inspect image|dir  --(best.pt)-->  RESOLVED (0 tokens) | Needs Review
                                        Needs Review images are collected for later
-                                       manual teaching (see --uncertain-dir).
+                                       manual training (see --uncertain-dir).
 
 Commands:
-   python qms.py teach                        # learn every reviews/<part>.json
-    python qms.py build                        # repack models/best.pt from the DB
+   python qms.py train                       # learn every reviews/<part>.json
+   python qms.py build                       # repack models/best.pt from the DB
     python qms.py inspect <image|dir> [--out DIR] [--uncertain-dir DIR|--no-collect]
-    python qms.py serve [--port 8000]          # REST API (offline)
-    python qms.py stats                        # DB + model summary
+   python qms.py serve [--port 8000]         # REST API (offline)
+   python qms.py stats                       # DB + model summary
 """
 from __future__ import annotations
 import argparse
@@ -36,7 +36,7 @@ def _images(target):
     return [target]
 
 
-def cmd_teach(args):
+def cmd_train(args):
     from inspector import teacher
     teacher.main()
     return 0
@@ -110,11 +110,14 @@ def build_parser():
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    pt = sub.add_parser("teach", help="learn every reviews/<part>.json into inspection_memory.db")
-    pt.set_defaults(func=cmd_teach)
+    pt = sub.add_parser("train", help="learn every reviews/<part>.json into inspection_memory.db")
+    pt.set_defaults(func=cmd_train)
 
-    pt_alias = sub.add_parser("ingest", help=argparse.SUPPRESS)
-    pt_alias.set_defaults(func=cmd_teach)
+    pt_alias = sub.add_parser("teach", help=argparse.SUPPRESS)
+    pt_alias.set_defaults(func=cmd_train)
+
+    pt_alias2 = sub.add_parser("ingest", help=argparse.SUPPRESS)
+    pt_alias2.set_defaults(func=cmd_train)
 
     pb = sub.add_parser("build", help="repack models/best.pt from the inspection memory DB")
     pb.set_defaults(func=cmd_build)

@@ -5,7 +5,7 @@ Endpoints
 GET  /health              -> service status + cache counts
 POST /inspect             -> multipart 'image' file; returns the JSON verdict
                              plus status RESOLVED | TEACH_NEEDED and a retrieval hint
-POST /learn               -> teach at runtime; multipart 'image' + form 'label',
+POST /learn               -> train at runtime; multipart 'image' + form 'label',
                              or JSON {"path": "...", "label": "..."}; updates cache+DB
 GET  /parts               -> parts + learned categories
 GET  /stats               -> exemplar counts + recent inspections

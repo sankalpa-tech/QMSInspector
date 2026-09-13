@@ -4,7 +4,7 @@ Loads models/best.pt (all learnings in one file) and inspects images locally. An
 image that matches a learned sample by perceptual hash gets the confirmed verdict
 plus the exact annotated masks pulled from the checkpoint. Genuinely-new images
 come back UNCERTAIN and (optionally) get copied into an "uncertain" folder so a
-human can teach them later.
+human can train the system later.
 """
 from __future__ import annotations
 import os

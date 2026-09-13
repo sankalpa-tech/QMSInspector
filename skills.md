@@ -13,13 +13,13 @@ This file is for future work sessions. Read this before making UI or labeling ch
 
 ## Core pipeline
 
-1. `python qms.py teach`
+1. `python qms.py train`
 2. `python qms.py build`
 3. `python qms.py serve --port 8000`
 
 Important behavior:
 
-- `teach` is idempotent and skips already learned exemplar names
+- `train` is idempotent and skips already learned exemplar names
 - If a review label changes for an already learned image, updating the JSON alone is not enough
 - For relabeling an already learned sample, update both:
   - `reviews\*.json`
@@ -123,7 +123,7 @@ Current user/domain preference:
 
 - The old manual-mark category is not a real defect category for this project
 - Remove that legacy category from taxonomy, lessons, training data, and model artifacts
-- Do not show or teach manual-mark / reject-paint categories in the UI
+- Do not show or train manual-mark / reject-paint categories in the UI
 
 ### Dent category simplification
 

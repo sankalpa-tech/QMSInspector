@@ -6,7 +6,7 @@ images, packs everything into one portable model file, and then inspects new
 images entirely on your machine - **no cloud, no LLM, no API keys**.
 
 Needs Review images (ones the model has never seen) are set aside so a human can
-teach them later, closing the loop.
+train the model again later, closing the loop.
 
 ### What this product does
 
@@ -30,7 +30,7 @@ This is useful when the same parts are inspected repeatedly and the goal is to:
 - `Part` - a specific component type being inspected, such as a Bearing Cup or Bracket.
 - `Taxonomy` - the list of allowed defect labels or categories for a part.
 - `Review` - a human-validated marking that defines what is good or defective on a sample image.
-- `Teach` - the process of adding reviewed examples into the local memory so the system can recognize them later.
+- `Train` - the process of adding reviewed examples into the local memory so the system can recognize them later.
 - `Needs Review` - the safe fallback state when the image does not match any known example confidently.
 - `Inspection Memory` - the local SQLite database that stores learned examples and prior inspection history.
 - `Model` - the packaged local model built from the learned data for offline inference.
@@ -40,7 +40,7 @@ This is useful when the same parts are inspected repeatedly and the goal is to:
 ```mermaid
 flowchart TD
     A[Add Part] --> B[Upload images]
-    B --> C[Teach samples]
+    B --> C[Train samples]
 
     K[Taxonomy] --> C
     M[Inspection Memory DB] --> C
@@ -53,7 +53,7 @@ flowchart TD
     G --> G2[Defect box overlay]
 
     F -- No --> H[Needs Review]
-    H --> I[Teach again]
+    H --> I[Train again]
     I --> C
 ```
 
@@ -62,23 +62,23 @@ flowchart TD
 ## How it works
 
 ```
- reviews/<part>.json --teach--> data/inspection_memory.db --build--> models/best.pt
+ reviews/<part>.json --train--> data/inspection_memory.db --build--> models/best.pt
                                                                      |
                                             inspect (0 tokens) <-----+
                                                   |
                                 RESOLVED (annotated verdict)  or  Needs Review
                                                                       |
-                                             copied to  uncertain/  for teaching
+                                             copied to  uncertain/  for retraining
 ```
 
-* **teach** - reads every `reviews/<part>.json` (each entry = a human marking:
+* **train** - reads every `reviews/<part>.json` (each entry = a human marking:
   part, OK/DEFECT, defect boxes/polygons) and stores it as a confirmed example
  (feature vector + perceptual hash) in `data/inspection_memory.db`.
 * **build** - packs all examples + geometry + taxonomy + lessons into a single
   `models/best.pt`.
 * **inspect** - loads `best.pt` and matches each image by perceptual hash. A match
   replays the confirmed verdict and draws the exact defect masks. No match =>
- `Needs Review`, and the image is copied to `uncertain/` for later teaching.
+ `Needs Review`, and the image is copied to `uncertain/` for later retraining.
 
 Inspection never calls any external service.
 
@@ -93,8 +93,8 @@ pip install -r requirements.txt
 ## Usage
 
 ```powershell
-# 1. teach from the review files (idempotent - skips already-learned images)
-python qms.py teach
+# 1. train from the review files (idempotent - skips already-learned images)
+python qms.py train
 
 # 2. build the packed model
 python qms.py build
@@ -148,7 +148,7 @@ Or with optional dependency install:
 |--------|------------|-----------------------------------------------------|
 | GET    | `/health`  | service status + counts                             |
 | POST   | `/inspect` | inspect an uploaded image; returns the JSON verdict |
-| POST   | `/learn`   | teach a label at runtime (image + label)            |
+| POST   | `/learn`   | train a label at runtime (image + label)            |
 | GET    | `/parts`   | learned parts + their defect categories             |
 | GET    | `/stats`   | counts + recent inspections                         |
 
@@ -160,7 +160,7 @@ For every image dropped in `uncertain/`, add an entry to the matching
 `reviews/<part>.json` (mark OK, or the defect + its box/polygon), then re-run:
 
 ```powershell
-python qms.py teach
+python qms.py train
 python qms.py build
 ```
 
@@ -175,7 +175,7 @@ the part + its defects in `knowledge_base/taxonomy.json`. No code changes needed
 ## Layout
 
 ```
-qms.py                     single CLI (teach | build | inspect | serve | stats)
+qms.py                     single CLI (train | build | inspect | serve | stats)
 inspector/
   settings.py              paths + tunables (env-overridable)
   taxonomy.py              central parts/defects/severity/colors loader
@@ -184,7 +184,7 @@ inspector/
   renderer.py              draws defect masks / labels / banners
   recognizer.py            offline packed-model recall (the inspect engine)
   model_builder.py         packs everything into models/best.pt
-  teacher.py               teaches all parts from reviews/
+  teacher.py               trains all parts from reviews/
   live_classifier.py       kNN + rule engine used by the REST API
   live_trainer.py          runtime add/correct used by the REST API
   web_api.py               Flask REST server (offline)
