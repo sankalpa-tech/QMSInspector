@@ -1,0 +1,80 @@
+"""Central configuration for QMSInspector.
+
+Every path and tunable resolves from an environment variable first, then falls
+back to an in-repo default, so the project is portable across machines. There is
+NO cloud/LLM configuration here - inspection is 100% offline and token-free.
+
+Environment variables (all optional):
+  QMS_DATA_DIR        images to inspect            (default: <root>/data/images)
+  QMS_OUT_DIR         annotated outputs            (default: <root>/inspect_out)
+  QMS_UNCERTAIN_DIR   collected UNCERTAIN images   (default: <root>/uncertain)
+  QMS_MODEL_PATH      packed checkpoint            (default: <root>/models/best.pt)
+  QMS_DB_PATH         learning database            (default: <root>/data/learning.db)
+  QMS_AES_DIR         external image folder        (default: legacy AES2 path)
+  QMS_PHASH_RECALL_MAX  near-duplicate threshold   (default: 6)
+  QMS_LOG_LEVEL       logging level                (default: INFO)
+"""
+from __future__ import annotations
+import os
+import logging
+
+PACKAGE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(PACKAGE_DIR)
+
+
+def _p(env, *default_parts):
+    v = os.environ.get(env)
+    return v if v else os.path.join(ROOT, *default_parts)
+
+
+# --- inputs / outputs ---
+DATA_DIR = _p("QMS_DATA_DIR", "data", "images")
+OUT_DIR = _p("QMS_OUT_DIR", "inspect_out")
+UNCERTAIN_DIR = _p("QMS_UNCERTAIN_DIR", "uncertain")
+
+# --- durable learnings ---
+MODEL_PATH = _p("QMS_MODEL_PATH", "models", "best.pt")
+DB_PATH = _p("QMS_DB_PATH", "data", "learning.db")
+
+# --- knowledge / taxonomy ---
+KNOWLEDGE_DIR = os.path.join(ROOT, "knowledge")
+TAXONOMY_PATH = os.environ.get("QMS_TAXONOMY_PATH", os.path.join(KNOWLEDGE_DIR, "taxonomy.json"))
+LESSONS_PATH = os.path.join(KNOWLEDGE_DIR, "lessons.json")
+CORRECTIONS_PATH = os.path.join(KNOWLEDGE_DIR, "corrections.json")
+CACHE_PATH = os.path.join(KNOWLEDGE_DIR, "defect_kb.json")
+
+# --- per-part human markings (one <part>.json per part) ---
+REVIEWS_DIR = os.path.join(ROOT, "reviews")
+
+# Optional external image folder for parts whose photos live outside the repo
+# (e.g. the original AES2 Bearing Cup captures). Overridable; not hardcoded.
+LEGACY_AES_DIR = os.environ.get(
+    "QMS_AES_DIR",
+    r"C:\workspace-ai\AES2-20260830T112553Z-1-001\AES2")
+
+# --- recall / decision ---
+PHASH_RECALL_MAX = int(os.environ.get("QMS_PHASH_RECALL_MAX", "6"))
+
+
+_LOG_CONFIGURED = False
+
+
+def get_logger(name="qms"):
+    """Return a configured logger (idempotent)."""
+    global _LOG_CONFIGURED
+    if not _LOG_CONFIGURED:
+        level = os.environ.get("QMS_LOG_LEVEL", "INFO").upper()
+        logging.basicConfig(
+            level=getattr(logging, level, logging.INFO),
+            format="%(asctime)s %(levelname)-7s %(name)s: %(message)s",
+            datefmt="%H:%M:%S",
+        )
+        _LOG_CONFIGURED = True
+    return logging.getLogger(name)
+
+
+def ensure_dirs():
+    for d in (DATA_DIR, OUT_DIR, UNCERTAIN_DIR,
+              os.path.dirname(MODEL_PATH), os.path.dirname(DB_PATH),
+              KNOWLEDGE_DIR, REVIEWS_DIR):
+        os.makedirs(d, exist_ok=True)

@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+
+# runtime outputs
+inspect_out/
+uncertain/
+uploads/
+
+# local data images (keep the folder, ignore contents)
+data/images/

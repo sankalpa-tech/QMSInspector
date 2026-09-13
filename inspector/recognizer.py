@@ -1,0 +1,117 @@
+"""Offline inspection engine: run the packed model with ZERO LLM tokens.
+
+Loads models/best.pt (all learnings in one file) and inspects images locally. Any
+image that matches a learned sample by perceptual hash gets the confirmed verdict
+plus the exact annotated masks pulled from the checkpoint. Genuinely-new images
+come back UNCERTAIN and (optionally) get copied into an "uncertain" folder so a
+human can teach them later.
+"""
+from __future__ import annotations
+import os
+import json
+import shutil
+
+import numpy as np
+import torch
+import cv2
+
+from . import image_features as F
+from . import renderer as A
+from . import settings
+
+DEFAULT_MODEL = settings.MODEL_PATH
+DEFAULT_OUT = settings.OUT_DIR
+
+
+def load_model(path):
+    ckpt = torch.load(path, map_location="cpu", weights_only=False)
+    E = ckpt["exemplars"]
+    ckpt["_X"] = E["X"].numpy().astype(np.float64)
+    ckpt["_mean"] = ckpt["norm"]["mean"].numpy().astype(np.float64)
+    ckpt["_std"] = np.where(ckpt["norm"]["std"].numpy() < 1e-6, 1e-6,
+                            ckpt["norm"]["std"].numpy()).astype(np.float64)
+    return ckpt
+
+
+def _priority(cat, severity_rules):
+    c = (cat or "").lower()
+    for score, kws in severity_rules:
+        if any(k in c for k in kws):
+            return score
+    return 2
+
+
+def _collect_uncertain(path, uncertain_dir):
+    """Copy an UNCERTAIN source image into the collection folder for later teaching."""
+    if not uncertain_dir:
+        return None
+    os.makedirs(uncertain_dir, exist_ok=True)
+    dst = os.path.join(uncertain_dir, os.path.basename(path))
+    try:
+        shutil.copy2(path, dst)
+    except shutil.SameFileError:
+        pass
+    return dst
+
+
+def inspect(path, m, out_dir, uncertain_dir=None):
+    feat = F.extract(path)
+    vec, signals = feat["vector"], feat["signals"]
+    keys = m["feature_keys"]
+    x = np.array([float(vec.get(k, 0.0)) for k in keys], dtype=np.float64)
+
+    E = m["exemplars"]
+    phashes, names, labels = E["phash"], E["names"], E["labels"]
+    th = m["thresholds"]
+
+    # zero-token perceptual-hash recall
+    ph = signals.get("phash", "")
+    best_h, best_i = 999, -1
+    for i, h in enumerate(phashes):
+        if h:
+            d = F.hamming(ph, h)
+            if d < best_h:
+                best_h, best_i = d, i
+    recalled = best_i >= 0 and best_h <= th.get("phash_recall_max", 6)
+
+    img = cv2.imread(path)
+    base = os.path.splitext(os.path.basename(path))[0]
+    os.makedirs(out_dir, exist_ok=True)
+    collected = None
+
+    if recalled:
+        ref = names[best_i]
+        geo = m["geometry"].get(ref, {"defects": [], "result": labels[best_i]})
+        dets = geo.get("defects", [])
+        result = geo.get("result") or ("DEFECT" if dets else "OK")
+        conf = 96 if best_h == 0 else 88
+        if dets:
+            A.annotate(img, dets, uncertain=(result == "UNCERTAIN"))
+        elif result == "OK":
+            A.draw_ok_banner(img)
+        sdets = sorted(dets, key=lambda d: _priority(d.get("category", ""), m["severity_rules"]), reverse=True)
+        verdict = {"result": result, "defects": [] if result == "OK" else [{
+            "type": d["category"], "confidence": conf,
+            "location": d.get("location", "see box"), "reason": d.get("reason", ""),
+            "severity_priority": _priority(d["category"], m["severity_rules"]),
+            "primary": (i == 0)} for i, d in enumerate(sdets)]}
+        status = f"RESOLVED (recall '{ref}' hamming={best_h}, conf={conf}) -> 0 LLM tokens"
+    else:
+        # nearest-prototype hint (kNN), still local
+        Xn = (m["_X"] - m["_mean"]) / m["_std"]
+        xn = (x - m["_mean"]) / m["_std"]
+        dists = np.sqrt(((Xn - xn) ** 2).sum(axis=1)) if len(Xn) else np.array([])
+        hint = ", ".join(f"{labels[i]}({dists[i]:.1f})" for i in np.argsort(dists)[:3]) if len(dists) else ""
+        verdict = {"result": "UNCERTAIN", "defects": [], "hint": hint}
+        A.draw_label(img, 15, 45, "UNCERTAIN - needs review", (0, 140, 255))
+        cv2.rectangle(img, (0, 0), (img.shape[1] - 1, img.shape[0] - 1), (0, 140, 255), 6)
+        collected = _collect_uncertain(path, uncertain_dir)
+        status = f"TEACH_NEEDED (no recall; nearest: {hint})"
+        if collected:
+            status += f"; copied to {collected}"
+
+    out_img = os.path.join(out_dir, base + "_annotated.jpg")
+    cv2.imwrite(out_img, img)
+    with open(os.path.join(out_dir, base + ".json"), "w") as fh:
+        json.dump(verdict, fh, indent=2)
+    return verdict, status, out_img
