@@ -1,6 +1,6 @@
 # QMSInspector
 
-QMSInspector is an offline inspection system for manufactured parts. It learns from
+QMSInspector is an offline AI inspection system for manufactured parts. It learns from
 human-reviewed sample images, stores them in a local inspection memory database, and
 then checks new images entirely on the machine - **no cloud, no LLM, no API keys**.
 
