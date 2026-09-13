@@ -35,6 +35,28 @@ This is useful when the same parts are inspected repeatedly and the goal is to:
 - `Inspection Memory` - the local SQLite database that stores learned examples and prior inspection history.
 - `Model` - the packaged local model built from the learned data for offline inference.
 
+### Workflow diagram
+
+```mermaid
+flowchart TD
+    A[Add Part] --> B[Upload images]
+    B --> C[Teach samples]
+
+    K[Taxonomy] --> C
+    M[Inspection Memory DB] --> C
+
+    C --> D[Build model]
+    D --> E[Inspect image]
+    E --> F{Known match?}
+
+    F -- Yes --> G[Resolved verdict]
+    G --> G2[Defect box overlay]
+
+    F -- No --> H[Needs Review]
+    H --> I[Teach again]
+    I --> C
+```
+
 ---
 
 ## How it works
