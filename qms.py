@@ -1,17 +1,17 @@
 """QMSInspector - unified command-line interface. 100% offline, ZERO LLM tokens.
-
+ 
 Production loop:
-
+ 
    train   reviews/<part>.json + images  -> inspection_memory.db
    build   inspection_memory.db          -> models/best.pt
     inspect image|dir  --(best.pt)-->  RESOLVED (0 tokens) | Needs Review
                                        Needs Review images are collected for later
-                                       manual training (see --uncertain-dir).
-
+                                       manual review (see --needs-review-dir).
+ 
 Commands:
    python qms.py train                       # learn every reviews/<part>.json
    python qms.py build                       # repack models/best.pt from the DB
-    python qms.py inspect <image|dir> [--out DIR] [--uncertain-dir DIR|--no-collect]
+    python qms.py inspect <image|dir> [--out DIR] [--needs-review-dir DIR|--no-collect]
    python qms.py serve [--port 8000]         # REST API (offline)
    python qms.py stats                       # DB + model summary
 """
@@ -56,29 +56,29 @@ def cmd_inspect(args):
     model = recognizer.load_model(settings.MODEL_PATH)
     out_dir = args.out or settings.OUT_DIR
     os.makedirs(out_dir, exist_ok=True)
-    uncertain_dir = None if args.no_collect else (args.uncertain_dir or settings.UNCERTAIN_DIR)
+    needs_review_dir = None if args.no_collect else (args.needs_review_dir or settings.NEEDS_REVIEW_DIR)
 
-    n_resolved = n_uncertain = 0
+    n_resolved = n_needs_review = 0
     for p in _images(args.target):
         if not os.path.exists(p):
             log.warning("skip missing: %s", p)
             continue
-        verdict, status, out_img = recognizer.inspect(p, model, out_dir, uncertain_dir=uncertain_dir)
+        verdict, status, out_img = recognizer.inspect(p, model, out_dir, needs_review_dir=needs_review_dir)
         if status.startswith("RESOLVED"):
             n_resolved += 1
         else:
-            n_uncertain += 1
+            n_needs_review += 1
         print(f"\n=== {os.path.basename(p)} ===")
         print(json.dumps({k: v for k, v in verdict.items() if k != "hint"}, indent=2))
         print("STATUS:", status)
         print("annotated:", out_img)
 
-    total = n_resolved + n_uncertain
+    total = n_resolved + n_needs_review
     if total > 1:
-        print(f"\n{n_resolved} resolved (0 tokens), {n_uncertain} needs review "
+        print(f"\n{n_resolved} resolved (0 tokens), {n_needs_review} needs review "
               f"/ {total} total.")
-        if n_uncertain and uncertain_dir:
-            print(f"Needs Review images collected in: {uncertain_dir}")
+        if n_needs_review and needs_review_dir:
+            print(f"Needs Review images collected in: {needs_review_dir}")
     return 0
 
 
@@ -119,8 +119,10 @@ def build_parser():
     pi = sub.add_parser("inspect", help="inspect image(s) locally (0 tokens)")
     pi.add_argument("target")
     pi.add_argument("--out", help="output folder for annotated images")
-    pi.add_argument("--uncertain-dir", dest="uncertain_dir",
-                    help="folder to copy Needs Review images into (default: ./uncertain)")
+    pi.add_argument("--needs-review-dir", dest="needs_review_dir",
+                    help="folder to copy Needs Review images into (default: ./needs_review)")
+    pi.add_argument("--uncertain-dir", dest="needs_review_dir",
+                    help=argparse.SUPPRESS)
     pi.add_argument("--no-collect", action="store_true",
                     help="do not copy Needs Review images anywhere")
     pi.set_defaults(func=cmd_inspect)

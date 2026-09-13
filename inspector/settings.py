@@ -8,7 +8,7 @@ Environment variables (all optional):
   QMS_STATE_DIR       inspection state root        (default: <root>/inspection_state)
   QMS_DATA_DIR        images to inspect            (default: <state>/data/images)
   QMS_OUT_DIR         annotated outputs            (default: <root>/inspect_out)
-  QMS_UNCERTAIN_DIR   collected Needs Review images(default: <root>/uncertain)
+  QMS_NEEDS_REVIEW_DIR collected Needs Review images(default: <root>/needs_review)
   QMS_MODEL_PATH      packed checkpoint            (default: <state>/models/best.pt)
   QMS_DB_PATH         inspection memory database   (default: <state>/data/inspection_memory.db)
   QMS_AES_DIR         external image folder        (default: legacy AES2 path)
@@ -37,7 +37,8 @@ if not os.path.exists(os.path.join(STATE_DIR, "data")) and not os.path.exists(os
 # --- inputs / outputs ---
 DATA_DIR = _p("QMS_DATA_DIR", STATE_DIR, "data", "images")
 OUT_DIR = _p("QMS_OUT_DIR", "inspect_out")
-UNCERTAIN_DIR = _p("QMS_UNCERTAIN_DIR", "uncertain")
+NEEDS_REVIEW_DIR = _p("QMS_NEEDS_REVIEW_DIR", "needs_review")
+UNCERTAIN_DIR = os.environ.get("QMS_UNCERTAIN_DIR") or NEEDS_REVIEW_DIR
 
 # --- durable learnings ---
 MODEL_PATH = _p("QMS_MODEL_PATH", STATE_DIR, "models", "best.pt")

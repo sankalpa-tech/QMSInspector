@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-09-14T02:14:35",
+  "updated_at": "2026-09-14T02:25:29",
   "categories": [
     "Black Mark After Electroplating",
     "Electroplating Defect",
@@ -187,7 +187,7 @@
     "dark_score_weak": 15.0,
     "center_contrast_low": 6.0,
     "hole_rough_high": 999.0,
-    "uncertain_below": 50,
+    "needs_review_below": 50,
     "knn_k": 5,
     "phash_recall_max": 6
   },

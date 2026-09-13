@@ -1,7 +1,7 @@
 {
-  "release": "v2026-09-14-state",
-  "created_at_utc": "2026-09-13T20:45:48Z",
-  "git_commit": "2667bd1e4b94626a5e8f0a22afec76a2274d3b45",
+  "release": "v2026-09-14",
+  "created_at_utc": "2026-09-13T20:55:32Z",
+  "git_commit": "54f7c2e024107609018b86e1c416e5e48a543f1d",
   "root": ".",
   "source_bundle": [
     "inspection_state/reviews",
@@ -12,7 +12,7 @@
   "files": [
     {
       "path": "inspection_state/data/inspection_memory.db",
-      "sha256": "9ba6ef1cd65a3f31045dce1130e9d3e1821fcf2a59bd7fb477c3f17b566f4fb8",
+      "sha256": "a7372a9ceed56f8b4ba35da0137970e48800440b0a6bd3c9e37f6ee9ed0f5d91",
       "size_bytes": 49152
     },
     {
@@ -22,8 +22,8 @@
     },
     {
       "path": "inspection_state/knowledge/defect_kb.json",
-      "sha256": "b7a2b96a9d0bdc34009a69af7ff130a2c9eeacb7bc1772031278680632c94f8a",
-      "size_bytes": 10905
+      "sha256": "530e5f5c6b28be3aec7c9f0107663bb481f233a8dab81b90adcf541c54c797f3",
+      "size_bytes": 10908
     },
     {
       "path": "inspection_state/knowledge/lessons.json",
@@ -37,7 +37,7 @@
     },
     {
       "path": "inspection_state/models/best.pt",
-      "sha256": "1b6bc9b669b21dc3eeda791ffa5117f384806fbf0522f4d8ed010bd2c6a7d849",
+      "sha256": "eba097504f86ab535dab3c6f73b643850fadb0c676108968b971e3ec4ad729b0",
       "size_bytes": 42310
     },
     {

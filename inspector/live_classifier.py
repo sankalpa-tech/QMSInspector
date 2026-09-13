@@ -2,7 +2,7 @@
 
 Combines kNN over stored exemplars with interpretable rule signals to produce the
 required JSON verdict, and logs every inspection to inspection_memory.db so the system can
-learn from feedback. Anything not confidently recalled is returned as UNCERTAIN
+learn from feedback. Anything not confidently recalled is returned as Needs Review
 and routed for retraining.
 """
 from __future__ import annotations

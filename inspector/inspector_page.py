@@ -21,7 +21,7 @@ HTML = r"""<!doctype html>
     --line-strong:#35507a;
     --ok:#22c55e;
     --defect:#ef4444;
-    --uncertain:#f59e0b;
+    --needs-review:#f59e0b;
     --accent:#60a5fa;
     --accent-2:#7dd3fc;
     --bg-glow:#1a2a48;
@@ -68,7 +68,7 @@ HTML = r"""<!doctype html>
     --line-strong:#abc0e3;
     --ok:#16a34a;
     --defect:#dc2626;
-    --uncertain:#d97706;
+    --needs-review:#d97706;
     --accent:#2563eb;
     --accent-2:#0ea5e9;
     --bg-glow:#c9dcf7;
@@ -188,7 +188,7 @@ HTML = r"""<!doctype html>
   .stat.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--stat-active-ring) inset}
   .stat .n{font-size:29px;font-weight:700}
   .stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-  .stat.defect .n{color:var(--defect)} .stat.ok .n{color:var(--ok)} .stat.unc .n{color:var(--uncertain)}
+  .stat.defect .n{color:var(--defect)} .stat.ok .n{color:var(--ok)} .stat.unc .n{color:var(--needs-review)}
   .filters{display:none;gap:8px;margin:8px 0 18px;flex-wrap:wrap}
   .chip{
     background:var(--card);
@@ -233,7 +233,7 @@ HTML = r"""<!doctype html>
     padding:4px 10px;border-radius:999px;color:#04121f
   }
   .badge.DEFECT{background:var(--defect);color:#fff} .badge.OK{background:var(--ok)}
-  .badge.NEEDS_REVIEW{background:var(--uncertain)}
+  .badge.NEEDS_REVIEW{background:var(--needs-review)}
   .part{display:inline-block;font-size:11px;color:var(--part-text);background:var(--part-bg);border:1px solid var(--line);
         padding:3px 8px;border-radius:999px;margin-left:6px}
   .card .name{font-size:12px;color:var(--muted);margin-top:8px;word-break:break-all}
@@ -428,7 +428,7 @@ function render(data){
   for(const it of data.results){
     if(it.error){ continue; }
     const div=document.createElement('div');
-    const normalizedResult = it.result === 'UNCERTAIN' ? 'NEEDS_REVIEW' : (it.result || 'NEEDS_REVIEW');
+    const normalizedResult = it.result === 'NEEDS_REVIEW' ? 'NEEDS_REVIEW' : (it.result || 'NEEDS_REVIEW');
     div.className='card'; div.dataset.result=normalizedResult; div.dataset.part=it.part||'default';
     const defTxt = it.defects && it.defects.length
         ? it.defects.map(d=>d.type).join(', ')

@@ -231,7 +231,7 @@ def _default_thresholds():
         # hole roughness is not discriminative. Keep the rule effectively off and let
         # kNN + human review decide serration. Feature stays in the vector for kNN.
         "hole_rough_high": 999.0,
-        "uncertain_below": 50,
+        "needs_review_below": 50,
         "knn_k": 5,
         "phash_recall_max": settings.PHASH_RECALL_MAX,
     }

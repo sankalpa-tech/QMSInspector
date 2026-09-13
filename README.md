@@ -54,7 +54,7 @@ flowchart TD
                                                   |
                                 RESOLVED (annotated verdict)  or  Needs Review
                                                                       |
-                                             copied to  uncertain/  for retraining
+                                             copied to  needs_review/  for retraining
 ```
 
 * **train** - reads every `reviews/<part>.json` file, validates each human marking
@@ -66,7 +66,7 @@ flowchart TD
 * **inspect** - loads `best.pt`, extracts the feature vector and perceptual hash from
  an input image, performs local recall against stored reference entries, and returns
  either a resolved verdict with defect overlays or a `Needs Review` result. Images that
- fail recall are copied into `uncertain/` for later retraining.
+ fail recall are copied into `needs_review/` for later retraining.
 
 Inspection never calls any external service.
 
@@ -123,8 +123,8 @@ python qms.py build
 python qms.py inspect "C:\path\to\image.jpg"
 python qms.py inspect "C:\path\to\folder"
 
-#    Needs Review images are copied to ./uncertain by default:
-python qms.py inspect "C:\path\to\folder" --uncertain-dir "C:\to_review"
+#    Needs Review images are copied to ./needs_review by default:
+python qms.py inspect "C:\path\to\folder" --needs-review-dir "C:\to_review"
 python qms.py inspect "C:\path\to\folder" --no-collect      # don't copy
 
 # summary of what has been learned
@@ -187,7 +187,7 @@ Or with optional dependency install:
 
 ## Reviewing new images
 
-For every image dropped in `uncertain/`, add an entry to the matching
+For every image dropped in `needs_review/`, add an entry to the matching
 `reviews/<part>.json` (mark OK, or the defect + its box/polygon), then re-run:
 
 ```powershell
@@ -235,7 +235,7 @@ inspection_state/
 - `inspection_state/knowledge/` - taxonomy, defect definitions, and training guidance
 - `inspection_state/models/` - built inspection model package used for offline inference
 - `inspect_out/` - generated annotated inspection outputs
-- `uncertain/` - images that did not match confidently and need human review
+- `needs_review/` - images that did not match confidently and need human review
 
 All inspection is local and free. The only durable state you need to keep is
 `inspection_state/data/inspection_memory.db`, `inspection_state/models/best.pt`,

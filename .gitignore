@@ -4,7 +4,7 @@ __pycache__/
 
 # runtime outputs
 inspect_out/
-uncertain/
+needs_review/
 uploads/
 
 # local data images (keep the folder, ignore contents)

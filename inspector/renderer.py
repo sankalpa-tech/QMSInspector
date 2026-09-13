@@ -149,7 +149,7 @@ def segment_defect(img, bbox, method):
     return out
 
 
-def annotate(img, dets, uncertain=False):
+def annotate(img, dets, needs_review=False):
     """dets: list of dict {category, points(norm) | bbox(norm) [+ seg method], reason}.
     Draws every defect. The highest-severity defect is marked PRIMARY (thicker border)."""
     h, w = img.shape[:2]
@@ -157,10 +157,10 @@ def annotate(img, dets, uncertain=False):
     dets = sort_by_priority(dets)
     for i, d in enumerate(dets):
         name = d["category"]
-        is_primary = (i == 0) and not uncertain and len(dets) >= 1
-        color = (0, 140, 255) if uncertain else color_for(name)
-        prefix = "? " if uncertain else ("* " if is_primary else "")
-        label = prefix + name + (f"  [P{defect_priority(name)}]" if not uncertain else "")
+        is_primary = (i == 0) and not needs_review and len(dets) >= 1
+        color = (0, 140, 255) if needs_review else color_for(name)
+        prefix = "? " if needs_review else ("* " if is_primary else "")
+        label = prefix + name + (f"  [P{defect_priority(name)}]" if not needs_review else "")
         seg_contours = []
         if d.get("points"):
             pts = np.array([[int(x * w), int(y * h)] for x, y in d["points"]], np.int32)

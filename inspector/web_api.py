@@ -245,13 +245,13 @@ def ui_inspect():
         for p in images:
             base = os.path.splitext(os.path.basename(p))[0]
             try:
-                verdict, status, out_img = REC.inspect(p, model, out_dir, uncertain_dir=None)
+                verdict, status, out_img = REC.inspect(p, model, out_dir, needs_review_dir=None)
             except Exception as e:  # noqa
                 results.append({"name": os.path.basename(p), "error": str(e)})
                 continue
             resolved = status.startswith("RESOLVED")
             result = verdict.get("result", "NEEDS_REVIEW")
-            normalized_result = "NEEDS_REVIEW" if result == "UNCERTAIN" else result
+            normalized_result = "NEEDS_REVIEW" if result == "NEEDS_REVIEW" else result
             counts["RESOLVED" if resolved else "NEEDS_REVIEW"] += 1
             if normalized_result in ("OK", "DEFECT"):
                 counts[normalized_result] += 1

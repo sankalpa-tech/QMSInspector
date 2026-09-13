@@ -1,10 +1,10 @@
 """Offline inspection engine: run the packed model with ZERO LLM tokens.
-
+ 
 Loads models/best.pt (all learnings in one file) and inspects images locally. Any
 image that matches a learned sample by perceptual hash gets the confirmed verdict
 plus the exact annotated masks pulled from the checkpoint. Genuinely-new images
-come back UNCERTAIN and (optionally) get copied into an "uncertain" folder so a
-human can train the system later.
+come back Needs Review and (optionally) get copied into a "needs_review" folder so a
+human can review the system later.
 """
 from __future__ import annotations
 import os
@@ -41,12 +41,12 @@ def _priority(cat, severity_rules):
     return 2
 
 
-def _collect_uncertain(path, uncertain_dir):
-    """Copy an UNCERTAIN source image into the collection folder for later retraining."""
-    if not uncertain_dir:
+def _collect_needs_review(path, needs_review_dir):
+    """Copy a Needs Review image into the collection folder for later retraining."""
+    if not needs_review_dir:
         return None
-    os.makedirs(uncertain_dir, exist_ok=True)
-    dst = os.path.join(uncertain_dir, os.path.basename(path))
+    os.makedirs(needs_review_dir, exist_ok=True)
+    dst = os.path.join(needs_review_dir, os.path.basename(path))
     try:
         shutil.copy2(path, dst)
     except shutil.SameFileError:
@@ -54,7 +54,12 @@ def _collect_uncertain(path, uncertain_dir):
     return dst
 
 
-def inspect(path, m, out_dir, uncertain_dir=None):
+def _collect_uncertain(path, uncertain_dir):
+    """Backward-compatible alias for the old uncertain folder name."""
+    return _collect_needs_review(path, uncertain_dir)
+
+
+def inspect(path, m, out_dir, needs_review_dir=None):
     feat = F.extract(path)
     vec, signals = feat["vector"], feat["signals"]
     keys = m["feature_keys"]
@@ -88,7 +93,7 @@ def inspect(path, m, out_dir, uncertain_dir=None):
         result = geo.get("result") or ("DEFECT" if dets else "OK")
         conf = 96 if best_h == 0 else 88
         if dets:
-            A.annotate(img, dets, uncertain=(result == "NEEDS_REVIEW"))
+            A.annotate(img, dets, needs_review=(result == "NEEDS_REVIEW"))
         elif result == "OK":
             A.draw_ok_banner(img)
         sdets = sorted(dets, key=lambda d: _priority(d.get("category", ""), m["severity_rules"]), reverse=True)
@@ -111,7 +116,7 @@ def inspect(path, m, out_dir, uncertain_dir=None):
                    "defects": [], "hint": hint}
         A.draw_label(img, 15, 45, "Needs Review", (0, 140, 255))
         cv2.rectangle(img, (0, 0), (img.shape[1] - 1, img.shape[0] - 1), (0, 140, 255), 6)
-        collected = _collect_uncertain(path, uncertain_dir)
+        collected = _collect_needs_review(path, needs_review_dir)
         status = f"NEEDS_REVIEW (likely part={part}; no recall; nearest: {hint})"
         if collected:
             status += f"; copied to {collected}"
