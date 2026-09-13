@@ -78,39 +78,6 @@ Inspection never calls any external service.
 pip install -r requirements.txt
 ```
 
-## Release snapshot
-
-This project treats the reviewed data and taxonomy as the source of truth, while
-`inspection_state/data/inspection_memory.db` and `inspection_state/models/best.pt`
-are generated runtime artifacts. To save a versioned inspection state for later
-recovery, create a release snapshot:
-
-```powershell
-python release_snapshot.py --tag v2026-09-14
-```
-
-This writes a snapshot under `releases/<tag>/` with a JSON manifest containing
-SHA256 hashes for the current reviews, taxonomy, database, and model. The snapshot
-also stores the current runtime state as an archived bundle so you can restore a
-known-good state later.
-
-### Release snapshot policy
-
-Create a snapshot when the inspection state materially changes, such as:
-
-- new or removed part definitions
-- taxonomy or defect-label updates
-- review corrections or added evidence samples
-- retraining or any DB/model regeneration
-- a pre-demo or release-candidate checkpoint
-- any state that must be recoverable before risky changes
-
-Do not create a snapshot for purely cosmetic edits or temporary experiments that
-are not meant to be preserved.
-
-A practical rule is: if the system could behave differently after the change,
-create a release snapshot.
-
 ## Usage
 
 ```powershell
@@ -189,7 +156,7 @@ Or with optional dependency install:
 ## Reviewing new images
 
 For every image dropped in `needs_review/`, add an entry to the matching
-`reviews/<part>.json` (mark OK, or the defect + its box/polygon), then re-run:
+`inspection_state/reviews/<part>.json` (mark OK, or the defect + its box/polygon), then re-run:
 
 ```powershell
 python qms.py train
@@ -199,8 +166,9 @@ python qms.py build
 The next inspection of that image (or a near-duplicate) resolves instantly with
 zero tokens.
 
-To add a **new part**, create `reviews/<new_part>.json` (same schema) and register
-the part + its defects in `knowledge_base/taxonomy.json`. No code changes needed.
+To add a **new part**, create `inspection_state/reviews/<new_part>.json` (same schema)
+and register the part + its defects in `inspection_state/knowledge/taxonomy.json`.
+No code changes needed.
 
 ---
 
@@ -241,3 +209,36 @@ inspection_state/
 All inspection is local and free. The only durable state you need to keep is
 `inspection_state/data/inspection_memory.db`, `inspection_state/models/best.pt`,
 `inspection_state/reviews/`, and `inspection_state/knowledge/`.
+
+## Release snapshot
+
+This project treats the reviewed data and taxonomy as the source of truth, while
+`inspection_state/data/inspection_memory.db` and `inspection_state/models/best.pt`
+are generated runtime artifacts. To save a versioned inspection state for later
+recovery, create a release snapshot:
+
+```powershell
+python release_snapshot.py --tag v2026-09-14
+```
+
+This writes a snapshot under `releases/<tag>/` with a JSON manifest containing
+SHA256 hashes for the current reviews, taxonomy, database, and model. The snapshot
+also stores the current runtime state as an archived bundle so you can restore a
+known-good state later.
+
+### Release snapshot policy
+
+Create a snapshot when the inspection state materially changes, such as:
+
+- new or removed part definitions
+- taxonomy or defect-label updates
+- review corrections or added evidence samples
+- retraining or any DB/model regeneration
+- a pre-demo or release-candidate checkpoint
+- any state that must be recoverable before risky changes
+
+Do not create a snapshot for purely cosmetic edits or temporary experiments that
+are not meant to be preserved.
+
+A practical rule is: if the system could behave differently after the change,
+create a release snapshot.
