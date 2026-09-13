@@ -77,7 +77,7 @@ Naming constraint:
 
 ## Current UX decisions
 
-- Use **Needs Review** instead of **Uncertain** in the UI
+- Use **Needs Review** consistently in the UI and docs
 - Top summary cards should be clickable
 - Bottom chips and top summary cards must stay synced to the same filter state
 - `Images` summary card should reset to `All`

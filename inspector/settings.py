@@ -8,7 +8,7 @@ Environment variables (all optional):
   QMS_STATE_DIR       inspection state root        (default: <root>/inspection_state)
   QMS_DATA_DIR        images to inspect            (default: <state>/data/images)
   QMS_OUT_DIR         annotated outputs            (default: <root>/inspect_out)
-  QMS_NEEDS_REVIEW_DIR collected Needs Review images(default: <root>/needs_review)
+  QMS_NEEDS_REVIEW_DIR collected Needs Review images (default: <root>/needs_review)
   QMS_MODEL_PATH      packed checkpoint            (default: <state>/models/best.pt)
   QMS_DB_PATH         inspection memory database   (default: <state>/data/inspection_memory.db)
   QMS_AES_DIR         external image folder        (default: legacy AES2 path)
@@ -38,7 +38,6 @@ if not os.path.exists(os.path.join(STATE_DIR, "data")) and not os.path.exists(os
 DATA_DIR = _p("QMS_DATA_DIR", STATE_DIR, "data", "images")
 OUT_DIR = _p("QMS_OUT_DIR", "inspect_out")
 NEEDS_REVIEW_DIR = _p("QMS_NEEDS_REVIEW_DIR", "needs_review")
-UNCERTAIN_DIR = os.environ.get("QMS_UNCERTAIN_DIR") or NEEDS_REVIEW_DIR
 
 # --- durable learnings ---
 MODEL_PATH = _p("QMS_MODEL_PATH", STATE_DIR, "models", "best.pt")
@@ -88,7 +87,7 @@ def get_logger(name="qms"):
 
 
 def ensure_dirs():
-    for d in (DATA_DIR, OUT_DIR, UNCERTAIN_DIR,
+    for d in (DATA_DIR, OUT_DIR, NEEDS_REVIEW_DIR,
               os.path.dirname(MODEL_PATH), os.path.dirname(DB_PATH),
               KNOWLEDGE_DIR, REVIEWS_DIR):
         os.makedirs(d, exist_ok=True)

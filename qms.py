@@ -121,8 +121,6 @@ def build_parser():
     pi.add_argument("--out", help="output folder for annotated images")
     pi.add_argument("--needs-review-dir", dest="needs_review_dir",
                     help="folder to copy Needs Review images into (default: ./needs_review)")
-    pi.add_argument("--uncertain-dir", dest="needs_review_dir",
-                    help=argparse.SUPPRESS)
     pi.add_argument("--no-collect", action="store_true",
                     help="do not copy Needs Review images anywhere")
     pi.set_defaults(func=cmd_inspect)

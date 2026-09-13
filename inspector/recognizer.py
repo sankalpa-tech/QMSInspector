@@ -54,11 +54,6 @@ def _collect_needs_review(path, needs_review_dir):
     return dst
 
 
-def _collect_uncertain(path, uncertain_dir):
-    """Backward-compatible alias for the old uncertain folder name."""
-    return _collect_needs_review(path, uncertain_dir)
-
-
 def inspect(path, m, out_dir, needs_review_dir=None):
     feat = F.extract(path)
     vec, signals = feat["vector"], feat["signals"]
