@@ -194,5 +194,15 @@ models/best.pt             the packed model
 data/inspection_memory.db  durable learned memory
 ```
 
+### Folder purpose summary
+
+- `data/` - local runtime data, including the main SQLite database
+- `data/inspection_memory.db` - durable inspection memory and learned examples
+- `reviews/` - human-reviewed sample annotations for each part
+- `knowledge_base/` - taxonomy, defect definitions, and training guidance
+- `models/` - built inspection model package used for offline inference
+- `inspect_out/` - generated annotated inspection outputs
+- `uncertain/` - images that did not match confidently and need human review
+
 All inspection is local and free. The only durable state you need to keep is
 `data/inspection_memory.db`, `models/best.pt`, `reviews/`, and `knowledge_base/`.
