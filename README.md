@@ -24,6 +24,17 @@ This is useful when the same parts are inspected repeatedly and the goal is to:
 - keep full control of the inspection process offline
 - improve the system over time by teaching it new edge cases
 
+### Terminology
+
+- `Project` - a collection of inspection work for one product or line.
+- `Part` - a specific component type being inspected, such as a Bearing Cup or Bracket.
+- `Taxonomy` - the list of allowed defect labels or categories for a part.
+- `Review` - a human-validated marking that defines what is good or defective on a sample image.
+- `Teach` - the process of adding reviewed examples into the local memory so the system can recognize them later.
+- `Needs Review` - the safe fallback state when the image does not match any known example confidently.
+- `Inspection Memory` - the local SQLite database that stores learned examples and prior inspection history.
+- `Model` - the packaged local model built from the learned data for offline inference.
+
 ---
 
 ## How it works
