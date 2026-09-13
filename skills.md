@@ -50,7 +50,7 @@ Optional dependency install:
 
 Startup scripts should:
 
-- clear `inspection_runs\*`
+- clear `inspection_jobs\*`
 - not force dependency install by default
 - start the server on port `8000` unless overridden
 
@@ -152,5 +152,5 @@ Current user/domain preference:
 - After model or renderer changes, restart the server and regenerate run outputs
 - When the UI still shows old results, first suspect:
   1. old running server
-  2. old `inspection_runs` output
+  2. old `inspection_jobs` output
   3. stale learned exemplar rows in `data\inspection_memory.db`

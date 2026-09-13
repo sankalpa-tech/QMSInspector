@@ -41,9 +41,9 @@ if "%INSTALL_DEPS%"=="1" (
   )
 )
 
-if not exist "inspection_runs" mkdir "inspection_runs"
-for /d %%D in ("inspection_runs\*") do rmdir /s /q "%%~fD"
-for %%F in ("inspection_runs\*") do if exist "%%~fF" del /f /q "%%~fF"
+if not exist "inspection_jobs" mkdir "inspection_jobs"
+for /d %%D in ("inspection_jobs\*") do rmdir /s /q "%%~fD"
+for %%F in ("inspection_jobs\*") do if exist "%%~fF" del /f /q "%%~fF"
 
 %PYTHON_BIN% qms.py serve --port %PORT%
 set "EXIT_CODE=%ERRORLEVEL%"
@@ -53,7 +53,7 @@ exit /b %EXIT_CODE%
 :usage
 echo Usage: start.bat [--install]
 echo.
-echo Deletes previous inspection runs and starts the offline server.
+echo Deletes previous inspection job output and starts the offline server.
 echo.
 echo Options:
 echo   --install   Install requirements.txt before starting

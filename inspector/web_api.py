@@ -16,7 +16,6 @@ Run:
 from __future__ import annotations
 import os
 import time
-import uuid
 import glob
 import shutil
 import zipfile
@@ -33,9 +32,9 @@ from . import settings
 
 ROOT = settings.ROOT
 UPLOAD_DIR = os.path.join(ROOT, "uploads")
-RUNS_DIR = os.path.join(ROOT, "inspection_runs")
+JOBS_DIR = os.path.join(ROOT, "inspection_jobs")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(RUNS_DIR, exist_ok=True)
+os.makedirs(JOBS_DIR, exist_ok=True)
 
 IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
 
@@ -227,8 +226,8 @@ def ui_inspect():
     """Bulk inspection UI endpoint: accepts many images and/or .zip files.
     Runs the offline packed model (0 tokens) and returns per-image verdicts plus
     URLs to the annotated + original images."""
-    run_id = time.strftime("%Y%m%d-%H%M%S-") + uuid.uuid4().hex[:6]
-    run_dir = os.path.join(RUNS_DIR, run_id)
+    run_id = "QMS-" + time.strftime("%Y%m%d-%H%M%S")
+    run_dir = os.path.join(JOBS_DIR, run_id)
     in_dir = os.path.join(run_dir, "in")
     out_dir = os.path.join(run_dir, "out")
     os.makedirs(in_dir, exist_ok=True)
@@ -285,7 +284,7 @@ def ui_inspect():
 def ui_file(run_id, kind, fname):
     if kind not in ("in", "out"):
         return jsonify({"error": "bad path"}), 404
-    folder = os.path.join(RUNS_DIR, os.path.basename(run_id), kind)
+    folder = os.path.join(JOBS_DIR, os.path.basename(run_id), kind)
     return send_from_directory(folder, fname)
 
 def main():

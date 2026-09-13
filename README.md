@@ -124,7 +124,7 @@ If you want a one-command reset, use:
 ./start.sh
 ```
 
-That deletes previous `inspection_runs/*` output and starts the server on port `8000`.
+That deletes previous `inspection_jobs/*` output and starts the server on port `8000`.
 To install dependencies first, opt in explicitly:
 
 ```bash

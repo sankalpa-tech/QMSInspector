@@ -12,7 +12,7 @@ usage() {
   cat <<'EOF'
 Usage: ./start.sh [--install]
 
-Deletes previous inspection runs and starts the offline server.
+Deletes previous inspection job output and starts the offline server.
 
 Options:
   --install   Install requirements.txt before starting
@@ -54,7 +54,7 @@ if [ "$INSTALL_DEPS" -eq 1 ]; then
   "$PYTHON_BIN" -m pip install -r requirements.txt
 fi
 
-mkdir -p inspection_runs
-find inspection_runs -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+mkdir -p inspection_jobs
+find inspection_jobs -mindepth 1 -maxdepth 1 -exec rm -rf {} +
 
 exec "$PYTHON_BIN" qms.py serve --port "$PORT"

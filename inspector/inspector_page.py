@@ -105,8 +105,14 @@ HTML = r"""<!doctype html>
     --header-shadow:0 1px 0 rgba(15,23,42,.03), 0 10px 24px rgba(148,163,184,.12);
   }
   *{box-sizing:border-box}
+  html, body{
+    height:100%;
+  }
   body{
     margin:0;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
     font-family:"Inter","Segoe UI",Roboto,Arial,sans-serif;
     background:
       radial-gradient(1200px 500px at 50% -120px, var(--bg-glow) 0%, rgba(26,42,72,0) 70%),
@@ -152,7 +158,7 @@ HTML = r"""<!doctype html>
     cursor:pointer;
   }
   .theme-toggle:hover{border-color:var(--accent)}
-  main{max-width:1260px;margin:0 auto;padding:24px}
+  main{max-width:1260px;width:100%;margin:0 auto;padding:24px;flex:1}
   .drop{
     border:1px dashed var(--line-strong);
     border-radius:16px;
@@ -273,7 +279,14 @@ HTML = r"""<!doctype html>
     display:flex;align-items:center;justify-content:center
   }
   #lightbox .tools button:hover{border-color:var(--accent);color:var(--lb-btn-hover)}
-  footer{color:var(--muted);text-align:center;font-size:12px;padding:26px}
+  footer{
+    color:var(--muted);
+    text-align:center;
+    font-size:12px;
+    padding:18px 24px 28px;
+    border-top:1px solid var(--line);
+    background:rgba(11,18,32,.18);
+  }
 </style>
 </head>
 <body>
@@ -327,7 +340,7 @@ HTML = r"""<!doctype html>
   </div>
 </div>
 
-<footer>QMS Inspector</footer>
+<footer>Quality Inspection Platform</footer>
 
 <script>
 const drop=document.getElementById('drop'), file=document.getElementById('file'),
@@ -356,7 +369,7 @@ function applyTheme(theme){
 function loadTheme(){
   const saved = localStorage.getItem(THEME_KEY);
   if(saved === 'light' || saved === 'dark') return saved;
-  return 'light';
+  return 'dark';
 }
 applyTheme(loadTheme());
 
