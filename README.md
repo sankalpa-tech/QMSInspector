@@ -1,38 +1,24 @@
 # QMSInspector
 
-Offline, **zero-token** quality-inspection system for manufactured parts
-(currently **Bearing Cup** and **Bracket**). It learns from human-marked example
-images, packs everything into one portable model file, and then inspects new
-images entirely on your machine - **no cloud, no LLM, no API keys**.
+QMSInspector is an offline inspection system for manufactured parts. It learns from
+human-reviewed sample images, stores them in a local inspection memory database, and
+then checks new images entirely on the machine - **no cloud, no LLM, no API keys**.
 
-Needs Review images (ones the model has never seen) are set aside so a human can
-train the model again later, closing the loop.
+Unlike generic object detectors, it is trained on your actual part-specific defects,
+part types, and pass/fail decisions. If an image does not match a known pattern with
+confidence, it is marked **Needs Review** and sent back for human training.
 
-### What this product does
-
-QMSInspector is a local inspection assistant for factory quality teams. It helps
-review manufactured parts by comparing incoming images against previously taught
-examples, highlighting known defects, and flagging anything unfamiliar for human
-review. Instead of sending images to the cloud or depending on a generic object
-model, it stays fully on the machine and learns from actual part-specific marks,
-defects, and pass/fail decisions from your own quality process.
-
-This is useful when the same parts are inspected repeatedly and the goal is to:
-
-- catch known defects quickly and consistently
-- avoid false certainty on unfamiliar images
-- keep full control of the inspection process offline
-- improve the system over time by teaching it new edge cases
+This is built for repeat part inspection: fast review of known defects, safe handling
+of unfamiliar cases, and full local control of the quality process.
 
 ### Terminology
 
-- `Project` - a collection of inspection work for one product or line.
 - `Part` - a specific component type being inspected, such as a Bearing Cup or Bracket.
 - `Taxonomy` - the list of allowed defect labels or categories for a part.
 - `Review` - a human-validated marking that defines what is good or defective on a sample image.
-- `Train` - the process of adding reviewed examples into the local memory so the system can recognize them later.
-- `Needs Review` - the safe fallback state when the image does not match any known example confidently.
-- `Inspection Memory DB` - the local SQLite database that stores learned examples and prior inspection history.
+- `Train` - the process of adding reviewed sample images into the local memory so the system can recognize them later.
+- `Needs Review` - the safe fallback state when the image does not match any known sample confidently.
+- `Inspection Memory DB` - the local SQLite database that stores learned sample data and prior inspection history.
 - `Model` - the packaged local model built from the learned data for offline inference.
 
 ### Workflow diagram
@@ -43,7 +29,7 @@ flowchart TD
     B --> C[Train samples]
 
     K[Taxonomy] --> C
-    M[Learning DB] --> C
+    M[Inspection Memory DB] --> C
 
     C --> D[Build model]
     D --> E[Inspect image]
@@ -72,9 +58,9 @@ flowchart TD
 ```
 
 * **train** - reads every `reviews/<part>.json` (each entry = a human marking:
-  part, OK/DEFECT, defect boxes/polygons) and stores it as a confirmed example
+ part, OK/DEFECT, defect boxes/polygons) and stores it as a confirmed sample
  (feature vector + perceptual hash) in `data/inspection_memory.db`.
-* **build** - packs all examples + geometry + taxonomy + lessons into a single
+* **build** - packs all trained samples + geometry + taxonomy + lessons into a single
   `models/best.pt`.
 * **inspect** - loads `best.pt` and matches each image by perceptual hash. A match
   replays the confirmed verdict and draws the exact defect masks. No match =>
