@@ -1,7 +1,7 @@
 {
   "release": "v2026-09-14",
-  "created_at_utc": "2026-09-13T21:01:12Z",
-  "git_commit": "a0eb3fe0d1f3823052fbba17e297bb57a66e5118",
+  "created_at_utc": "2026-09-13T21:02:45Z",
+  "git_commit": "1f0363f74f0a01835aa5b601843223e4a844a785",
   "root": ".",
   "source_bundle": [
     "inspection_state/reviews",

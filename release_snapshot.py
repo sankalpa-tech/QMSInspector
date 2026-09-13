@@ -104,7 +104,7 @@ def build_manifest(tag: str) -> dict:
 def copy_release_artifacts(tag: str, manifest_path: Path) -> None:
     release_dir = manifest_path.parent
     bundle_dir = release_dir / "bundle"
-    archive_path = release_dir / "inspection_state_bundle.zip"
+    archive_path = release_dir / f"{tag}_inspection_state.zip"
 
     shutil.rmtree(bundle_dir, ignore_errors=True)
     if archive_path.exists():
