@@ -9,7 +9,7 @@ Environment variables (all optional):
   QMS_OUT_DIR         annotated outputs            (default: <root>/inspect_out)
   QMS_UNCERTAIN_DIR   collected UNCERTAIN images   (default: <root>/uncertain)
   QMS_MODEL_PATH      packed checkpoint            (default: <root>/models/best.pt)
-  QMS_DB_PATH         learning database            (default: <root>/data/learning.db)
+  QMS_DB_PATH         inspection memory database   (default: <root>/data/inspection_memory.db)
   QMS_AES_DIR         external image folder        (default: legacy AES2 path)
   QMS_PHASH_RECALL_MAX  near-duplicate threshold   (default: 6)
   QMS_LOG_LEVEL       logging level                (default: INFO)
@@ -34,10 +34,16 @@ UNCERTAIN_DIR = _p("QMS_UNCERTAIN_DIR", "uncertain")
 
 # --- durable learnings ---
 MODEL_PATH = _p("QMS_MODEL_PATH", "models", "best.pt")
-DB_PATH = _p("QMS_DB_PATH", "data", "learning.db")
+LEGACY_DB_PATH = _p("QMS_DB_PATH", "data", "learning.db")
+DB_PATH = _p("QMS_DB_PATH", "data", "inspection_memory.db")
+if not os.path.exists(DB_PATH) and os.path.exists(LEGACY_DB_PATH):
+    DB_PATH = LEGACY_DB_PATH
 
-# --- knowledge / taxonomy ---
-KNOWLEDGE_DIR = os.path.join(ROOT, "knowledge")
+# --- knowledge base / taxonomy ---
+LEGACY_KNOWLEDGE_DIR = os.path.join(ROOT, "knowledge")
+KNOWLEDGE_DIR = os.environ.get("QMS_KNOWLEDGE_DIR", os.path.join(ROOT, "knowledge_base"))
+if not os.path.exists(KNOWLEDGE_DIR) and os.path.exists(LEGACY_KNOWLEDGE_DIR):
+    KNOWLEDGE_DIR = LEGACY_KNOWLEDGE_DIR
 TAXONOMY_PATH = os.environ.get("QMS_TAXONOMY_PATH", os.path.join(KNOWLEDGE_DIR, "taxonomy.json"))
 LESSONS_PATH = os.path.join(KNOWLEDGE_DIR, "lessons.json")
 CORRECTIONS_PATH = os.path.join(KNOWLEDGE_DIR, "corrections.json")

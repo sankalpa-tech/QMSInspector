@@ -2,14 +2,14 @@
 
 Production loop:
 
-    teach   reviews/<part>.json + images  -> learning.db
-    build   learning.db                    -> models/best.pt
-    inspect image|dir  --(best.pt)-->  RESOLVED (0 tokens) | UNCERTAIN
-                                       UNCERTAIN images are collected for later
+   teach   reviews/<part>.json + images  -> inspection_memory.db
+   build   inspection_memory.db          -> models/best.pt
+    inspect image|dir  --(best.pt)-->  RESOLVED (0 tokens) | Needs Review
+                                       Needs Review images are collected for later
                                        manual teaching (see --uncertain-dir).
 
 Commands:
-    python qms.py teach                        # learn every reviews/<part>.json
+   python qms.py teach                        # learn every reviews/<part>.json
     python qms.py build                        # repack models/best.pt from the DB
     python qms.py inspect <image|dir> [--out DIR] [--uncertain-dir DIR|--no-collect]
     python qms.py serve [--port 8000]          # REST API (offline)
@@ -75,10 +75,10 @@ def cmd_inspect(args):
 
     total = n_resolved + n_uncertain
     if total > 1:
-        print(f"\n{n_resolved} resolved (0 tokens), {n_uncertain} uncertain "
+        print(f"\n{n_resolved} resolved (0 tokens), {n_uncertain} needs review "
               f"/ {total} total.")
         if n_uncertain and uncertain_dir:
-            print(f"uncertain images collected in: {uncertain_dir}")
+            print(f"Needs Review images collected in: {uncertain_dir}")
     return 0
 
 
@@ -110,19 +110,22 @@ def build_parser():
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    pt = sub.add_parser("teach", help="learn every reviews/<part>.json into learning.db")
+    pt = sub.add_parser("teach", help="learn every reviews/<part>.json into inspection_memory.db")
     pt.set_defaults(func=cmd_teach)
 
-    pb = sub.add_parser("build", help="repack models/best.pt from the learning DB")
+    pt_alias = sub.add_parser("ingest", help=argparse.SUPPRESS)
+    pt_alias.set_defaults(func=cmd_teach)
+
+    pb = sub.add_parser("build", help="repack models/best.pt from the inspection memory DB")
     pb.set_defaults(func=cmd_build)
 
     pi = sub.add_parser("inspect", help="inspect image(s) locally (0 tokens)")
     pi.add_argument("target")
     pi.add_argument("--out", help="output folder for annotated images")
     pi.add_argument("--uncertain-dir", dest="uncertain_dir",
-                    help="folder to copy UNCERTAIN images into (default: ./uncertain)")
+                    help="folder to copy Needs Review images into (default: ./uncertain)")
     pi.add_argument("--no-collect", action="store_true",
-                    help="do not copy UNCERTAIN images anywhere")
+                    help="do not copy Needs Review images anywhere")
     pi.set_defaults(func=cmd_inspect)
 
     ps = sub.add_parser("serve", help="run the offline REST API")

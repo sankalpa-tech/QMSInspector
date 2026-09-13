@@ -88,7 +88,7 @@ def inspect(path, m, out_dir, uncertain_dir=None):
         result = geo.get("result") or ("DEFECT" if dets else "OK")
         conf = 96 if best_h == 0 else 88
         if dets:
-            A.annotate(img, dets, uncertain=(result == "UNCERTAIN"))
+            A.annotate(img, dets, uncertain=(result == "NEEDS_REVIEW"))
         elif result == "OK":
             A.draw_ok_banner(img)
         sdets = sorted(dets, key=lambda d: _priority(d.get("category", ""), m["severity_rules"]), reverse=True)
@@ -107,9 +107,9 @@ def inspect(path, m, out_dir, uncertain_dir=None):
         order = np.argsort(dists) if len(dists) else []
         part = parts[order[0]] if len(order) else "default"   # nearest-neighbour part guess
         hint = ", ".join(f"{labels[i]}({dists[i]:.1f})" for i in order[:3]) if len(dists) else ""
-        verdict = {"result": "UNCERTAIN", "part": part, "part_confident": False,
+        verdict = {"result": "NEEDS_REVIEW", "part": part, "part_confident": False,
                    "defects": [], "hint": hint}
-        A.draw_label(img, 15, 45, "UNCERTAIN - needs review", (0, 140, 255))
+        A.draw_label(img, 15, 45, "Needs Review", (0, 140, 255))
         cv2.rectangle(img, (0, 0), (img.shape[1] - 1, img.shape[0] - 1), (0, 140, 255), 6)
         collected = _collect_uncertain(path, uncertain_dir)
         status = f"TEACH_NEEDED (likely part={part}; no recall; nearest: {hint})"

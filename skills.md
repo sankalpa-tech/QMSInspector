@@ -8,7 +8,7 @@ This file is for future work sessions. Read this before making UI or labeling ch
 - No cloud, no LLM, no API calls during inspection
 - Current parts in use: `Bearing Cup` and `Bracket`
 - Training source of truth: `reviews\*.json`
-- Learned memory: `data\learning.db`
+- Learned memory: `data\inspection_memory.db`
 - Packed deployable model: `models\best.pt`
 
 ## Core pipeline
@@ -23,7 +23,7 @@ Important behavior:
 - If a review label changes for an already learned image, updating the JSON alone is not enough
 - For relabeling an already learned sample, update both:
   - `reviews\*.json`
-  - `data\learning.db`
+  - `data\inspection_memory.db`
 - Then run `python qms.py build`
 - Restart the server after rebuilding because the Flask app caches the model in memory
 

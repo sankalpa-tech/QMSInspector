@@ -233,7 +233,7 @@ HTML = r"""<!doctype html>
     padding:4px 10px;border-radius:999px;color:#04121f
   }
   .badge.DEFECT{background:var(--defect);color:#fff} .badge.OK{background:var(--ok)}
-  .badge.UNCERTAIN{background:var(--uncertain)}
+  .badge.NEEDS_REVIEW{background:var(--uncertain)}
   .part{display:inline-block;font-size:11px;color:var(--part-text);background:var(--part-bg);border:1px solid var(--line);
         padding:3px 8px;border-radius:999px;margin-left:6px}
   .card .name{font-size:12px;color:var(--muted);margin-top:8px;word-break:break-all}
@@ -304,7 +304,7 @@ HTML = r"""<!doctype html>
     <span class="chip active" data-f="ALL">All</span>
     <span class="chip" data-f="DEFECT">Defect</span>
     <span class="chip" data-f="OK">OK</span>
-    <span class="chip" data-f="UNCERTAIN">Needs Review</span>
+    <span class="chip" data-f="NEEDS_REVIEW">Needs Review</span>
   </div>
   <div id="partfilters" class="filters"></div>
 
@@ -420,7 +420,7 @@ function render(data){
     <div class="stat clickable" data-f="ALL"><div class="n">${data.total}</div><div class="l">Images</div></div>
     <div class="stat clickable defect" data-f="DEFECT"><div class="n">${c.DEFECT}</div><div class="l">Defect</div></div>
     <div class="stat clickable ok" data-f="OK"><div class="n">${c.OK}</div><div class="l">OK</div></div>
-    <div class="stat clickable unc" data-f="UNCERTAIN"><div class="n">${c.UNCERTAIN}</div><div class="l">Needs Review</div></div>`;
+    <div class="stat clickable unc" data-f="NEEDS_REVIEW"><div class="n">${c.NEEDS_REVIEW}</div><div class="l">Needs Review</div></div>`;
   summary.style.display='flex'; filters.style.display='flex';
   summary.querySelectorAll('.stat.clickable').forEach(card=>card.onclick=()=>setResultFilter(card.dataset.f));
   buildPartFilters(data.by_part);
@@ -428,15 +428,16 @@ function render(data){
   for(const it of data.results){
     if(it.error){ continue; }
     const div=document.createElement('div');
-    div.className='card'; div.dataset.result=it.result; div.dataset.part=it.part||'default';
+    const normalizedResult = it.result === 'UNCERTAIN' ? 'NEEDS_REVIEW' : (it.result || 'NEEDS_REVIEW');
+    div.className='card'; div.dataset.result=normalizedResult; div.dataset.part=it.part||'default';
     const defTxt = it.defects && it.defects.length
         ? it.defects.map(d=>d.type).join(', ')
-        : (it.result==='OK'?'No defect':'Needs review');
+        : (normalizedResult==='OK'?'No defect':'Needs review');
     const partTxt = (it.part||'part') + (it.part_confident?'':' ?');
     div.innerHTML=`
       <img src="${it.annotated_url}" data-a="${it.annotated_url}" data-o="${it.original_url}"/>
       <div class="body">
-        <span class="badge ${it.result}">${it.result}</span>
+        <span class="badge ${normalizedResult}">${normalizedResult === 'NEEDS_REVIEW' ? 'Needs Review' : normalizedResult}</span>
         <span class="part">${partTxt}</span>
         <div class="def">${defTxt}</div>
         <div class="name">${it.name}</div>

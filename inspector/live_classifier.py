@@ -196,9 +196,9 @@ def inspect_image(path, cache, exemplars, log=True):
                             "reason": "SUSPECTED (not confirmed): " + reason})
         # HONEST POLICY: hand-crafted features are not reliable on this part, so
         # ONLY a confident perceptual-hash recall counts as a resolved result.
-        # Anything not recalled is returned as UNCERTAIN and routed for teaching.
+        # Anything not recalled is returned as NEEDS_REVIEW and routed for teaching.
         needs_review = True
-        result = "UNCERTAIN"
+        result = "NEEDS_REVIEW"
 
     verdict = {"result": result, "defects": defects if result != "OK" else []}
 

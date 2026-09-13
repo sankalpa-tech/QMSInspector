@@ -240,7 +240,7 @@ def ui_inspect():
 
     model = _model()
     results = []
-    counts = {"RESOLVED": 0, "UNCERTAIN": 0, "OK": 0, "DEFECT": 0}
+    counts = {"RESOLVED": 0, "NEEDS_REVIEW": 0, "OK": 0, "DEFECT": 0}
     with _lock:
         for p in images:
             base = os.path.splitext(os.path.basename(p))[0]
@@ -250,10 +250,11 @@ def ui_inspect():
                 results.append({"name": os.path.basename(p), "error": str(e)})
                 continue
             resolved = status.startswith("RESOLVED")
-            result = verdict.get("result", "UNCERTAIN")
-            counts["RESOLVED" if resolved else "UNCERTAIN"] += 1
-            if result in ("OK", "DEFECT"):
-                counts[result] += 1
+            result = verdict.get("result", "NEEDS_REVIEW")
+            normalized_result = "NEEDS_REVIEW" if result == "UNCERTAIN" else result
+            counts["RESOLVED" if resolved else "NEEDS_REVIEW"] += 1
+            if normalized_result in ("OK", "DEFECT"):
+                counts[normalized_result] += 1
             defects = [{"type": d.get("type"), "severity": d.get("severity_priority"),
                         "location": d.get("location"), "primary": d.get("primary", False)}
                        for d in verdict.get("defects", [])]
@@ -261,19 +262,19 @@ def ui_inspect():
                 "name": os.path.basename(p),
                 "part": verdict.get("part", "default"),
                 "part_confident": verdict.get("part_confident", False),
-                "status": "RESOLVED" if resolved else "UNCERTAIN",
-                "result": result,
+                "status": "RESOLVED" if resolved else "NEEDS_REVIEW",
+                "result": normalized_result,
                 "defects": defects,
                 "primary_defect": (defects[0]["type"] if defects else None),
                 "annotated_url": f"/ui/file/{run_id}/out/{os.path.basename(out_img)}",
                 "original_url": f"/ui/file/{run_id}/in/{os.path.basename(p)}",
             })
-    # DEFECT first, then UNCERTAIN, then OK, for an at-a-glance review order
-    order = {"DEFECT": 0, "UNCERTAIN": 1, "OK": 2}
+    # DEFECT first, then NEEDS_REVIEW, then OK, for an at-a-glance review order
+    order = {"DEFECT": 0, "NEEDS_REVIEW": 1, "OK": 2}
     results.sort(key=lambda r: (r.get("part", ""), order.get(r.get("result"), 3)))
     by_part = {}
     for r in results:
-        by_part.setdefault(r.get("part", "default"), {"total": 0, "DEFECT": 0, "OK": 0, "UNCERTAIN": 0})
+        by_part.setdefault(r.get("part", "default"), {"total": 0, "DEFECT": 0, "OK": 0, "NEEDS_REVIEW": 0})
         by_part[r["part"]]["total"] += 1
         by_part[r["part"]][r["result"]] = by_part[r["part"]].get(r["result"], 0) + 1
     return jsonify({"run_id": run_id, "total": len(images),

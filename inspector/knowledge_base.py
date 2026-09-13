@@ -1,9 +1,9 @@
-"""Learning DB (SQLite) + knowledge cache (JSON) for the defect inspector.
+"""Inspection memory DB (SQLite) + knowledge cache (JSON) for the defect inspector.
 
-- data/learning.db  : durable memory (exemplars, inspections, feedback, meta)
-- knowledge/defect_kb.json : the human+machine readable cache. It holds per-category
-  text signatures, decision thresholds, feature centroids and normalization stats.
-  `rebuild_cache` regenerates it from the exemplars.
+- data/inspection_memory.db : durable memory (exemplars, inspections, feedback, meta)
+- knowledge_base/defect_kb.json : the human+machine readable cache. It holds
+  per-category text signatures, decision thresholds, feature centroids and
+  normalization stats. `rebuild_cache` regenerates it from the exemplars.
 """
 from __future__ import annotations
 import os
