@@ -10,17 +10,11 @@
   "note_defects": "Bearing Cup uses domain-standard metal-forming defect names; Bracket uses the domain-standard electroplating/surface-finish names from the dataset. Legacy/generic names are kept as aliases so older data still resolves.",
 
   "defects": {
-    "Edge Chip": {
-      "severity": 5,
-      "color": [0, 0, 255],
-      "aliases": ["cut / chip", "cut", "chip", "chipped", "missing material", "torn", "crack", "broken"],
-      "description": "A bite of material missing from a rolled edge - the outline steps inward or looks torn/faceted instead of a smooth continuous curve."
-    },
     "Dent": {
       "severity": 4,
       "color": [0, 140, 255],
-      "aliases": ["dent", "ding", "deformation on inner rim", "notch / dent on outer flange"],
-      "description": "A localised inward deformation of the rim or flange face that does not remove material."
+      "aliases": ["dent", "ding", "deformation on inner rim", "notch / dent on outer flange", "cut", "missing material", "torn", "crack", "broken"],
+      "description": "Any localised edge, rim, flange, or collar damage on the bearing cup."
     },
     "Out-of-Round": {
       "severity": 4,
@@ -28,31 +22,12 @@
       "aliases": ["deformation", "out-of-round", "out of round", "ovality", "ovalised", "pinched", "bent", "distortion"],
       "description": "Central bore is not a clean circle - one side pinched, dented inward or ovalised (out-of-round)."
     },
-    "Nick": {
-      "severity": 3,
-      "color": [0, 220, 255],
-      "aliases": ["nick", "notch", "square tab", "nub"],
-      "description": "A small raised nub, square tab, or bite/indentation breaking the smooth curve of an edge or the inner collar rim."
-    },
     "Corrosion": {
       "severity": 2,
       "color": [30, 90, 160],
       "aliases": ["corrosion", "rust", "oxidation", "scratch"],
       "description": "Brown/orange mottled corrosion or rust on the drawn wall or face."
     },
-    "Discoloration": {
-      "severity": 1,
-      "color": [120, 120, 120],
-      "aliases": ["discoloration", "discolor", "stain", "dark mark", "smudge", "burn", "contamination"],
-      "description": "Discrete dark/discoloured smudge or burn on the metal face; darker than surrounding metal and NOT a shadow."
-    },
-    "Reject Mark": {
-      "severity": 1,
-      "color": [200, 0, 200],
-      "aliases": ["reject mark", "reject paint mark", "paint", "reject paint", "reject-marking"],
-      "description": "Deliberate red/pink inspection paint marking where an operator flagged a problem. Secondary marker - hunt the adjacent real defect."
-    },
-
     "Black Mark After Electroplating": {
       "severity": 2,
       "color": [40, 40, 220],

@@ -10,4 +10,4 @@ uploads/
 # local data images (keep the folder, ignore contents)
 data/images/
 
-demo_runs/
+inspection_runs/

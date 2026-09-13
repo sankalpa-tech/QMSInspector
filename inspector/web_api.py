@@ -28,14 +28,14 @@ from . import knowledge_base as kb
 from . import live_trainer as LEARN
 from . import live_classifier as INS
 from . import recognizer as REC
-from . import demo_page
+from . import inspector_page
 from . import settings
 
 ROOT = settings.ROOT
 UPLOAD_DIR = os.path.join(ROOT, "uploads")
-DEMO_DIR = os.path.join(ROOT, "demo_runs")
+RUNS_DIR = os.path.join(ROOT, "inspection_runs")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(DEMO_DIR, exist_ok=True)
+os.makedirs(RUNS_DIR, exist_ok=True)
 
 IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
 
@@ -218,17 +218,17 @@ def _iter_uploaded_images(run_in_dir):
 
 
 @app.get("/")
-def demo_home():
-    return Response(demo_page.HTML, mimetype="text/html")
+def home_page():
+    return Response(inspector_page.HTML, mimetype="text/html")
 
 
-@app.post("/demo/inspect")
-def demo_inspect():
-    """Bulk inspection for the demo UI: accepts many images and/or .zip files.
+@app.post("/ui/inspect")
+def ui_inspect():
+    """Bulk inspection UI endpoint: accepts many images and/or .zip files.
     Runs the offline packed model (0 tokens) and returns per-image verdicts plus
     URLs to the annotated + original images."""
     run_id = time.strftime("%Y%m%d-%H%M%S-") + uuid.uuid4().hex[:6]
-    run_dir = os.path.join(DEMO_DIR, run_id)
+    run_dir = os.path.join(RUNS_DIR, run_id)
     in_dir = os.path.join(run_dir, "in")
     out_dir = os.path.join(run_dir, "out")
     os.makedirs(in_dir, exist_ok=True)
@@ -265,8 +265,8 @@ def demo_inspect():
                 "result": result,
                 "defects": defects,
                 "primary_defect": (defects[0]["type"] if defects else None),
-                "annotated_url": f"/demo/file/{run_id}/out/{os.path.basename(out_img)}",
-                "original_url": f"/demo/file/{run_id}/in/{os.path.basename(p)}",
+                "annotated_url": f"/ui/file/{run_id}/out/{os.path.basename(out_img)}",
+                "original_url": f"/ui/file/{run_id}/in/{os.path.basename(p)}",
             })
     # DEFECT first, then UNCERTAIN, then OK, for an at-a-glance review order
     order = {"DEFECT": 0, "UNCERTAIN": 1, "OK": 2}
@@ -280,13 +280,12 @@ def demo_inspect():
                     "counts": counts, "by_part": by_part, "results": results})
 
 
-@app.get("/demo/file/<run_id>/<kind>/<path:fname>")
-def demo_file(run_id, kind, fname):
+@app.get("/ui/file/<run_id>/<kind>/<path:fname>")
+def ui_file(run_id, kind, fname):
     if kind not in ("in", "out"):
         return jsonify({"error": "bad path"}), 404
-    folder = os.path.join(DEMO_DIR, os.path.basename(run_id), kind)
+    folder = os.path.join(RUNS_DIR, os.path.basename(run_id), kind)
     return send_from_directory(folder, fname)
-
 
 def main():
     kb.init_db()

@@ -22,7 +22,7 @@
     "result": "DEFECT",
     "defects": [
       {
-        "category": "Nick",
+        "category": "Dent",
         "seg": "edge",
         "bbox": [
           0.685,
@@ -31,7 +31,7 @@
           0.05
         ],
         "location": "right outer flange edge (~3 o'clock)",
-        "reason": "A small radial notch/nick cut into the outer flange edge."
+        "reason": "A small dent/notch interrupts the outer flange edge."
       }
     ]
   },
@@ -40,7 +40,7 @@
     "result": "DEFECT",
     "defects": [
       {
-        "category": "Nick",
+        "category": "Dent",
         "bbox": [
           0.646,
           0.3,
@@ -48,7 +48,7 @@
           0.03
         ],
         "location": "inner collar rim, upper-right (~2 o'clock)",
-        "reason": "A small raised nub/notch protrudes inward from the inner collar rim edge."
+        "reason": "A small dent-like raised nub/notch protrudes inward from the inner collar rim edge."
       }
     ]
   },
@@ -57,7 +57,7 @@
     "result": "DEFECT",
     "defects": [
       {
-        "category": "Nick",
+        "category": "Dent",
         "seg": "edge",
         "bbox": [
           0.41,
@@ -66,7 +66,7 @@
           0.05
         ],
         "location": "top of inner collar rim (~12 o'clock)",
-        "reason": "A small notch/nick bump interrupts the inner collar rim edge."
+        "reason": "A small dent/notch bump interrupts the inner collar rim edge."
       }
     ]
   },
@@ -75,7 +75,7 @@
     "result": "DEFECT",
     "defects": [
       {
-        "category": "Nick",
+        "category": "Dent",
         "seg": "edge",
         "bbox": [
           0.455,
@@ -84,7 +84,7 @@
           0.045
         ],
         "location": "top of inner collar rim (~12 o'clock)",
-        "reason": "A raised square tab/nick interrupts the inner collar rim edge."
+        "reason": "A raised square-tab dent interrupts the inner collar rim edge."
       }
     ]
   },
@@ -103,18 +103,6 @@
         ],
         "location": "lower portion of the inner bore",
         "reason": "Inner bore is out-of-round / pinched (non-circular), flattened to a point along its lower edge."
-      },
-      {
-        "category": "Reject Mark",
-        "seg": "red_paint",
-        "bbox": [
-          0.24,
-          0.24,
-          0.14,
-          0.28
-        ],
-        "location": "inner conical wall, upper-left (~10-11 o'clock)",
-        "reason": "Red operator reject-marking paint smeared down the inner conical wall, indicating the part was flagged."
       }
     ]
   },
@@ -123,8 +111,8 @@
     "result": "DEFECT",
     "defects": [
       {
-        "category": "Discoloration",
-        "seg": "dark",
+        "category": "Corrosion",
+        "seg": "rust",
         "bbox": [
           0.27,
           0.605,
@@ -132,7 +120,7 @@
           0.075
         ],
         "location": "domed face of the lower cup, upper-left",
-        "reason": "Dark discoloured stain blob on the drawn face of the lower cup."
+        "reason": "Dark rust/corrosion patch on the drawn face of the lower cup."
       }
     ]
   },
@@ -141,20 +129,8 @@
     "result": "DEFECT",
     "defects": [
       {
-        "category": "Reject Mark",
-        "seg": "red_paint",
-        "bbox": [
-          0.39,
-          0.66,
-          0.17,
-          0.07
-        ],
-        "location": "bottom outer flange / lip of the cup (~6 o'clock)",
-        "reason": "Red operator reject-marking paint dashes on the bottom flange, indicating the part was flagged."
-      },
-      {
-        "category": "Discoloration",
-        "seg": "dark",
+        "category": "Corrosion",
+        "seg": "rust",
         "bbox": [
           0.4,
           0.685,
@@ -162,7 +138,7 @@
           0.075
         ],
         "location": "raised oval boss on the bottom flange (~6 o'clock)",
-        "reason": "Dark black-toned discoloration/mark on the raised oval boss of the bottom flange."
+        "reason": "Rust/corrosion mark on the raised oval boss of the bottom flange."
       }
     ]
   },
@@ -180,7 +156,7 @@
           0.13
         ],
         "location": "lower-right outer flange edge",
-        "reason": "A notch/dent breaks the outer flange edge (with a red reject-paint smear alongside), indicating the part was flagged."
+        "reason": "A dent/notch breaks the outer flange edge."
       }
     ]
   },
@@ -189,7 +165,7 @@
     "result": "DEFECT",
     "defects": [
       {
-        "category": "Edge Chip",
+        "category": "Dent",
         "bbox": [
           0.66,
           0.69,
@@ -197,19 +173,7 @@
           0.075
         ],
         "location": "outer rolled flange silhouette edge, lower-right (~4-5 o'clock)",
-        "reason": "The outer flange silhouette steps/facets inward - a piece of the rolled edge is cut/missing, breaking the smooth continuous outer curve."
-      },
-      {
-        "category": "Reject Mark",
-        "seg": "red_paint",
-        "bbox": [
-          0.53,
-          0.73,
-          0.1,
-          0.06
-        ],
-        "location": "outer flange band, lower-left of the cut (~5 o'clock)",
-        "reason": "Red operator reject-marking paint smeared on the flange band beside the cut, indicating the part was flagged."
+        "reason": "The outer flange silhouette steps inward, showing dented/chipped edge damage that breaks the smooth outer curve."
       }
     ]
   },
@@ -218,19 +182,7 @@
     "result": "DEFECT",
     "defects": [
       {
-        "category": "Reject Mark",
-        "seg": "red_paint",
-        "bbox": [
-          0.31,
-          0.31,
-          0.15,
-          0.08
-        ],
-        "location": "top flange near the pierced inner-bore edge (~12 o'clock)",
-        "reason": "Red reject-marking paint at the top flange beside a rough/torn pierced inner-bore edge, indicating the part was flagged."
-      },
-      {
-        "category": "Edge Chip",
+        "category": "Dent",
         "seg": "edge",
         "bbox": [
           0.37,
@@ -239,7 +191,7 @@
           0.055
         ],
         "location": "top outer flange edge (~12 o'clock)",
-        "reason": "A step/notch is cut into the outer flange edge, breaking the smooth rolled edge profile (missing material)."
+        "reason": "A dented step/notch breaks the smooth rolled outer flange edge."
       }
     ]
   },
@@ -262,7 +214,7 @@
           0.3
         ],
         "location": "front outer (conical) wall",
-        "reason": "Brown/rust-toned mottled discoloration on the outer drawn wall."
+        "reason": "Brown/rust-toned corrosion on the outer drawn wall."
       }
     ]
   },

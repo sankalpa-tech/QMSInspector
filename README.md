@@ -68,6 +68,33 @@ python qms.py stats
 python qms.py serve --port 8000
 ```
 
+### Startup helper
+
+If you want a one-command reset, use:
+
+```bash
+./start.sh
+```
+
+That deletes previous `inspection_runs/*` output and starts the server on port `8000`.
+To install dependencies first, opt in explicitly:
+
+```bash
+./start.sh --install
+```
+
+On Windows, use:
+
+```powershell
+.\start.bat
+```
+
+Or with optional dependency install:
+
+```powershell
+.\start.bat --install
+```
+
 | Method | Path       | Purpose                                             |
 |--------|------------|-----------------------------------------------------|
 | GET    | `/health`  | service status + counts                             |

@@ -38,12 +38,52 @@ def sort_by_priority(dets):
     return sorted(dets, key=lambda d: defect_priority(d.get("category", "")), reverse=True)
 
 
+def focus_color_for(color):
+    b, g, r = [int(v) for v in color]
+    spread = max(b, g, r) - min(b, g, r)
+    mean = (b + g + r) / 3.0
+    if spread < 40:
+        return (255, 160, 0)
+    if mean > 200:
+        return (255, 160, 0)
+    return color
+
+
 def draw_label(img, x, y, text, color):
-    font, scale, th = cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2
-    (tw, tht), bl = cv2.getTextSize(text, font, scale, th)
-    y = max(y, tht + 6)
-    cv2.rectangle(img, (x, y - tht - 6), (x + tw + 6, y + bl - 2), color, -1)
-    cv2.putText(img, text, (x + 3, y - 3), font, scale, (255, 255, 255), th, cv2.LINE_AA)
+    h, w = img.shape[:2]
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    scale = max(0.9, min(1.35, min(h, w) / 480.0))
+    text_th = max(2, int(round(scale * 2)))
+    pad = max(6, int(round(scale * 7)))
+    (tw, tht), bl = cv2.getTextSize(text, font, scale, text_th)
+    box_w = tw + pad * 2
+    box_h = tht + bl + pad * 2
+    x = max(0, min(int(x), max(0, w - box_w - 1)))
+    above_top = int(y) - box_h - 4
+    below_top = int(y) + 4
+    box_y = above_top if above_top >= 0 else below_top
+    box_y = max(0, min(box_y, max(0, h - box_h - 1)))
+    edge = focus_color_for(color)
+    # Dark label background with a colored outline keeps text legible on bright metal.
+    cv2.rectangle(img, (x, box_y), (x + box_w, box_y + box_h), (12, 18, 32), -1)
+    cv2.rectangle(img, (x, box_y), (x + box_w, box_y + box_h), edge, 2, cv2.LINE_AA)
+    text_org = (x + pad, box_y + pad + tht)
+    cv2.putText(img, text, text_org, font, scale, (0, 0, 0), text_th + 2, cv2.LINE_AA)
+    cv2.putText(img, text, text_org, font, scale, (255, 255, 255), text_th, cv2.LINE_AA)
+
+
+def draw_focus_outline(img, contour_or_box, color, thickness):
+    """Draw a high-contrast locator outline that stays visible on metal surfaces."""
+    edge = focus_color_for(color)
+    if isinstance(contour_or_box, tuple):
+        x0, y0, x1, y1 = contour_or_box
+        cv2.rectangle(img, (x0, y0), (x1, y1), (0, 0, 0), thickness + 6, cv2.LINE_AA)
+        cv2.rectangle(img, (x0, y0), (x1, y1), (255, 255, 255), thickness + 3, cv2.LINE_AA)
+        cv2.rectangle(img, (x0, y0), (x1, y1), edge, thickness + 1, cv2.LINE_AA)
+        return
+    cv2.polylines(img, contour_or_box, True, (0, 0, 0), thickness + 6, cv2.LINE_AA)
+    cv2.polylines(img, contour_or_box, True, (255, 255, 255), thickness + 3, cv2.LINE_AA)
+    cv2.polylines(img, contour_or_box, True, edge, thickness + 1, cv2.LINE_AA)
 
 
 def _bbox_px(bbox, w, h):
@@ -64,7 +104,7 @@ def _largest_contours(mask, min_area, top=3):
 
 def segment_defect(img, bbox, method):
     """Return a list of pixel contours (Nx1x2 int32) segmenting the defect inside bbox.
-    Real OpenCV masks: color thresholding for paint/stain/rust, edge/GrabCut for geometry.
+    Real OpenCV masks: color thresholding for stain/rust, edge/GrabCut for geometry.
     Returns [] if segmentation fails (caller falls back to the box)."""
     h, w = img.shape[:2]
     x0, y0, x1, y1 = _bbox_px(bbox, w, h)
@@ -75,11 +115,7 @@ def segment_defect(img, bbox, method):
     hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
     mask = None
 
-    if method == "red_paint":
-        m1 = cv2.inRange(hsv, (0, 60, 60), (12, 255, 255))
-        m2 = cv2.inRange(hsv, (160, 40, 60), (180, 255, 255))
-        mask = cv2.bitwise_or(m1, m2)
-    elif method == "rust":
+    if method == "rust":
         # brown/orange-red, lower saturation than fresh paint
         mask = cv2.inRange(hsv, (3, 40, 40), (25, 255, 230))
     elif method == "dark":
@@ -139,7 +175,7 @@ def annotate(img, dets, uncertain=False):
                 seg_contours = segment_defect(img, d["bbox"], d["seg"])
         if seg_contours:
             cv2.fillPoly(overlay, seg_contours, color)
-            cv2.polylines(img, seg_contours, True, color, 2, cv2.LINE_AA)
+            draw_focus_outline(img, seg_contours, color, 2)
             allpts = np.vstack([c.reshape(-1, 2) for c in seg_contours])
             x0, y0 = int(allpts[:, 0].min()), int(allpts[:, 1].min())
             x1, y1 = int(allpts[:, 0].max()), int(allpts[:, 1].max())
@@ -149,7 +185,7 @@ def annotate(img, dets, uncertain=False):
         pad = 6
         rx0, ry0 = max(0, x0 - pad), max(0, y0 - pad)
         rx1, ry1 = min(w - 1, x1 + pad), min(h - 1, y1 + pad)
-        cv2.rectangle(img, (rx0, ry0), (rx1, ry1), color, 4 if is_primary else 2, cv2.LINE_AA)
+        draw_focus_outline(img, (rx0, ry0, rx1, ry1), color, 4 if is_primary else 2)
         draw_label(img, rx0, ry0, label, color)
     cv2.addWeighted(overlay, 0.30, img, 0.70, 0, img)
     return img
