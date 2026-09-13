@@ -4,7 +4,7 @@ Endpoints
 ---------
 GET  /health              -> service status + cache counts
 POST /inspect             -> multipart 'image' file; returns the JSON verdict
-                             plus status RESOLVED | TEACH_NEEDED and a retrieval hint
+                             plus status RESOLVED | NEEDS_REVIEW and a retrieval hint
 POST /learn               -> train at runtime; multipart 'image' + form 'label',
                              or JSON {"path": "...", "label": "..."}; updates cache+DB
 GET  /parts               -> parts + learned categories
@@ -111,17 +111,17 @@ def inspect_ep():
     except Exception as e:  # noqa
         return jsonify({"error": str(e)}), 500
 
-    status = "TEACH_NEEDED" if res["needs_review"] else "RESOLVED"
+    status = "NEEDS_REVIEW" if res["needs_review"] else "RESOLVED"
 
     return jsonify({
         **res["verdict"],                      # result + defects (required schema)
         "part": part,
-        "status": status,                       # RESOLVED | TEACH_NEEDED
+        "status": status,                       # RESOLVED | NEEDS_REVIEW
         "confidence": res["confidence"],
         "predicted": res["top"],
         "recall": res["recall"],
         "hint": res["hint"],                    # nearest known examples (for review)
-        "image_path": path,                     # reuse this in /learn to teach
+        "image_path": path,                     # reuse this in /learn to train
     })
 
 

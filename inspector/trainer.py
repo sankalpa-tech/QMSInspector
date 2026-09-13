@@ -1,13 +1,13 @@
-"""Teach ALL parts from their reviews/<part>.json files into the learning DB.
+"""Train all parts from their reviews/<part>.json files into the inspection memory DB.
 
-ONE generic teacher for every part. It auto-discovers every reviews/*.json and
-loads each entry as a confirmed exemplar (feature vector + perceptual hash for
-kNN / near-duplicate recall), records any human corrections, then rebuilds the
+ONE generic trainer for every part. It auto-discovers every reviews/*.json and
+loads each entry as a confirmed reference record (feature vector + perceptual hash
+for kNN / near-duplicate recall), records any human corrections, then rebuilds the
 knowledge cache. Adding a new part needs NO new code -- just a new
 reviews/<part>.json (+ its images).
 
 Pipeline:
-    reviews/<part>.json  ->  teacher  ->  inspection_memory.db  ->  model_builder  ->  best.pt
+    reviews/<part>.json  ->  trainer  ->  inspection_memory.db  ->  model_builder  ->  best.pt
 
 Image resolution per entry (in order):
     1. entry["image"] if it exists on disk  (in-repo parts)
@@ -16,7 +16,7 @@ Image resolution per entry (in order):
 Human corrections (optional): knowledge/corrections.json maps an image base to a
 {was, true_label, note} record, stored as an auditable feedback trail.
 
-Idempotent: an image already present as an exemplar for its part is skipped.
+Idempotent: an image already present as a reference for its part is skipped.
 """
 from __future__ import annotations
 import glob

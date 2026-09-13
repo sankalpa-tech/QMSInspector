@@ -6,7 +6,7 @@ then checks new images entirely on the machine - **no cloud, no LLM, no API keys
 
 Unlike generic object detectors, it is trained on your actual part-specific defects,
 part types, and pass/fail decisions. If an image does not match a known pattern with
-confidence, it is marked **Needs Review** and sent back for human training.
+confidence, it is marked **Needs Review** and sent back for human review.
 
 This is built for repeat part inspection: fast review of known defects, safe handling
 of unfamiliar cases, and full local control of the quality process.
@@ -57,14 +57,16 @@ flowchart TD
                                              copied to  uncertain/  for retraining
 ```
 
-* **train** - reads every `reviews/<part>.json` (each entry = a human marking:
- part, OK/DEFECT, defect boxes/polygons) and stores it as a confirmed sample
- (feature vector + perceptual hash) in `data/inspection_memory.db`.
-* **build** - packs all trained samples + geometry + taxonomy + lessons into a single
-  `models/best.pt`.
-* **inspect** - loads `best.pt` and matches each image by perceptual hash. A match
-  replays the confirmed verdict and draws the exact defect masks. No match =>
- `Needs Review`, and the image is copied to `uncertain/` for later retraining.
+* **train** - reads every `reviews/<part>.json` file, validates each human marking
+ against the active taxonomy, extracts per-image feature vectors and perceptual hashes,
+ and stores the approved training records in `data/inspection_memory.db`.
+* **build** - loads the trained records from the database, rebuilds the normalized
+ feature matrix and taxonomy metadata, and writes the packed inference artifact to
+ `models/best.pt`.
+* **inspect** - loads `best.pt`, extracts the feature vector and perceptual hash from
+ an input image, performs local recall against stored reference entries, and returns
+ either a resolved verdict with defect overlays or a `Needs Review` result. Images that
+ fail recall are copied into `uncertain/` for later retraining.
 
 Inspection never calls any external service.
 
@@ -140,7 +142,7 @@ Or with optional dependency install:
 
 ---
 
-## Teaching new images
+## Reviewing new images
 
 For every image dropped in `uncertain/`, add an entry to the matching
 `reviews/<part>.json` (mark OK, or the defect + its box/polygon), then re-run:
@@ -170,7 +172,7 @@ inspector/
   renderer.py              draws defect masks / labels / banners
   recognizer.py            offline packed-model recall (the inspect engine)
   model_builder.py         packs everything into models/best.pt
-  teacher.py               trains all parts from reviews/
+  trainer.py               trains all parts from reviews/
   live_classifier.py       kNN + rule engine used by the REST API
   live_trainer.py          runtime add/correct used by the REST API
   web_api.py               Flask REST server (offline)

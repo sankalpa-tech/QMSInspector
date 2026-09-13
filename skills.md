@@ -139,7 +139,7 @@ Current user/domain preference:
 - `inspector\web_api.py` - Flask endpoints and UI routes
 - `inspector\renderer.py` - annotation labels and boxes
 - `inspector\recognizer.py` - offline inspection behavior
-- `inspector\teacher.py` - ingesting review data
+- `inspector\trainer.py` - training review data
 - `inspector\knowledge_base.py` - SQLite learned exemplars
 - `reviews\bearing_cup.json`
 - `knowledge\taxonomy.json`

@@ -1,7 +1,7 @@
-"""Teach the inspector at runtime: confirm or correct a label so it learns (REST API).
+"""Train the inspector at runtime: confirm or correct a label so it learns (REST API).
 
 Usage:
-    # add/confirm a labeled exemplar (also updates the cache)
+    # add/confirm a labeled reference image (also updates the cache)
     python -m inspector.live_trainer add <image> "<label>" [--part "Bracket"]
 
     # attach feedback to the most recent inspection of an image and learn from it

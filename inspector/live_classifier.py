@@ -3,7 +3,7 @@
 Combines kNN over stored exemplars with interpretable rule signals to produce the
 required JSON verdict, and logs every inspection to inspection_memory.db so the system can
 learn from feedback. Anything not confidently recalled is returned as UNCERTAIN
-and routed for teaching.
+and routed for retraining.
 """
 from __future__ import annotations
 import os
@@ -196,7 +196,7 @@ def inspect_image(path, cache, exemplars, log=True):
                             "reason": "SUSPECTED (not confirmed): " + reason})
         # HONEST POLICY: hand-crafted features are not reliable on this part, so
         # ONLY a confident perceptual-hash recall counts as a resolved result.
-        # Anything not recalled is returned as NEEDS_REVIEW and routed for teaching.
+        # Anything not recalled is returned as NEEDS_REVIEW and routed for retraining.
         needs_review = True
         result = "NEEDS_REVIEW"
 
@@ -233,13 +233,13 @@ def main(argv):
         print(json.dumps(res["verdict"], indent=2))
         if res["recall"]:
             print(f"STATUS: RESOLVED (cached '{res['recall']['name']}' "
-                  f"{res['recall']['label']}, hamming={res['recall']['hamming']}) -> no teaching")
+                  f"{res['recall']['label']}, hamming={res['recall']['hamming']}) -> no retraining")
         elif res["needs_review"]:
             hint = ", ".join(f"{h['label']}({h['dist']})" for h in res["hint"])
-            print(f"STATUS: TEACH_NEEDED (conf {res['confidence']}). "
+            print(f"STATUS: NEEDS_REVIEW (conf {res['confidence']}). "
                   f"nearest known: {hint}")
         else:
-            print(f"STATUS: RESOLVED (rule/kNN conf {res['confidence']}) -> no teaching")
+            print(f"STATUS: RESOLVED (rule/kNN conf {res['confidence']}) -> no retraining")
     return 0
 
 

@@ -37,8 +37,8 @@ def _images(target):
 
 
 def cmd_train(args):
-    from inspector import teacher
-    teacher.main()
+    from inspector import trainer
+    trainer.main()
     return 0
 
 
@@ -112,12 +112,6 @@ def build_parser():
 
     pt = sub.add_parser("train", help="learn every reviews/<part>.json into inspection_memory.db")
     pt.set_defaults(func=cmd_train)
-
-    pt_alias = sub.add_parser("teach", help=argparse.SUPPRESS)
-    pt_alias.set_defaults(func=cmd_train)
-
-    pt_alias2 = sub.add_parser("ingest", help=argparse.SUPPRESS)
-    pt_alias2.set_defaults(func=cmd_train)
 
     pb = sub.add_parser("build", help="repack models/best.pt from the inspection memory DB")
     pb.set_defaults(func=cmd_build)

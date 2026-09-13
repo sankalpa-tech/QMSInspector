@@ -188,7 +188,7 @@ def rebuild_cache():
         if lst:
             centroids[c] = list(np.array(lst, dtype=np.float64).mean(axis=0))
 
-    # per-part -> per-category counts, for scoped teaching/inspection
+    # per-part -> per-category counts, for scoped training/inspection
     parts = {}
     for r in rows:
         p = r["part"] if "part" in r.keys() and r["part"] else "default"

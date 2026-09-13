@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "SINGLE SOURCE OF TRUTH for parts + defect taxonomy. Every module (annotate_aes2, teach, build_pt, run_pt) reads names / severity / colors from here via taxonomy.py. To add or rename a defect, edit ONLY this file, then run: python qms.py build.",
+  "note": "SINGLE SOURCE OF TRUTH for parts + defect taxonomy. Every module (annotate_aes2, train, build, inspect) reads names / severity / colors from here via taxonomy.py. To add or rename a defect, edit ONLY this file, then run: python qms.py build.",
 
   "default_part": "Bearing Cup",
   "parts": ["Bearing Cup", "Bracket"],

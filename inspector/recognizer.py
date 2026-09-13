@@ -42,7 +42,7 @@ def _priority(cat, severity_rules):
 
 
 def _collect_uncertain(path, uncertain_dir):
-    """Copy an UNCERTAIN source image into the collection folder for later teaching."""
+    """Copy an UNCERTAIN source image into the collection folder for later retraining."""
     if not uncertain_dir:
         return None
     os.makedirs(uncertain_dir, exist_ok=True)
@@ -112,7 +112,7 @@ def inspect(path, m, out_dir, uncertain_dir=None):
         A.draw_label(img, 15, 45, "Needs Review", (0, 140, 255))
         cv2.rectangle(img, (0, 0), (img.shape[1] - 1, img.shape[0] - 1), (0, 140, 255), 6)
         collected = _collect_uncertain(path, uncertain_dir)
-        status = f"TEACH_NEEDED (likely part={part}; no recall; nearest: {hint})"
+        status = f"NEEDS_REVIEW (likely part={part}; no recall; nearest: {hint})"
         if collected:
             status += f"; copied to {collected}"
 
