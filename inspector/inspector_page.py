@@ -41,15 +41,15 @@ HTML = r"""<!doctype html>
     --part-text:#cbd5e1;
     --def-text:#d7e5fb;
     --empty-bg:rgba(17,26,45,.45);
-    --lb-overlay:rgba(2,6,23,.94);
-    --lb-stage-bg:#020617;
-    --lb-stage-border:#334155;
-    --lb-tools-bg:rgba(2,6,23,.7);
-    --lb-tools-border:#334155;
-    --lb-btn-bg:#0b1220;
-    --lb-btn-fg:#e2e8f0;
-    --lb-btn-border:#475569;
-    --lb-btn-hover:#bae6fd;
+    --lb-overlay:rgba(0,0,0,.88);
+    --lb-stage-bg:#06080c;
+    --lb-stage-border:#2b3038;
+    --lb-tools-bg:rgba(10,12,16,.78);
+    --lb-tools-border:#3a404a;
+    --lb-btn-bg:#11151b;
+    --lb-btn-fg:#e5e7eb;
+    --lb-btn-border:#454c58;
+    --lb-btn-hover:#f8fafc;
     --panel-shadow:0 12px 40px rgba(0,0,0,.25);
     --card-shadow:0 10px 30px rgba(0,0,0,.22);
     --stat-shadow:0 8px 28px rgba(0,0,0,.22);
@@ -264,6 +264,28 @@ HTML = r"""<!doctype html>
   @keyframes spin{to{transform:rotate(360deg)}}
   #lightbox{display:none;position:fixed;inset:0;background:var(--lb-overlay);z-index:9;
         align-items:center;justify-content:center;flex-direction:column;padding:24px}
+  #lightbox .lb-nav{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:10;
+    width:46px;
+    height:46px;
+    border-radius:999px;
+    border:1px solid var(--lb-btn-border);
+    background:var(--lb-btn-bg);
+    color:var(--lb-btn-fg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-size:24px;
+    line-height:1;
+  }
+  #lightbox .lb-nav.prev{left:18px}
+  #lightbox .lb-nav.next{right:18px}
+  #lightbox .lb-nav:hover{border-color:var(--accent);color:var(--lb-btn-hover)}
+  #lightbox .lb-nav:disabled{opacity:.45;cursor:not-allowed}
   #lbStage{width:92vw;height:82vh;overflow:auto;
         background:var(--lb-stage-bg);border:1px solid var(--lb-stage-border);border-radius:12px;padding:10px;
         box-shadow:0 20px 70px rgba(0,0,0,.55)}
@@ -279,6 +301,7 @@ HTML = r"""<!doctype html>
     display:flex;align-items:center;justify-content:center
   }
   #lightbox .tools button:hover{border-color:var(--accent);color:var(--lb-btn-hover)}
+  #lightbox .tools button:disabled{opacity:.45;cursor:not-allowed}
   footer{
     color:var(--muted);
     text-align:center;
@@ -326,6 +349,8 @@ HTML = r"""<!doctype html>
 </main>
 
 <div id="lightbox">
+  <button id="lbPrev" class="lb-nav prev" title="Previous image" aria-label="Previous image">←</button>
+  <button id="lbNext" class="lb-nav next" title="Next image" aria-label="Next image">→</button>
   <div id="lbStage">
     <div id="lbCanvas">
       <img id="lbImg" src=""/>
@@ -352,8 +377,10 @@ const drop=document.getElementById('drop'), file=document.getElementById('file')
       lbImg=document.getElementById('lbImg'), lbToggle=document.getElementById('lbToggle'),
       lbClose=document.getElementById('lbClose'), lbZoomIn=document.getElementById('lbZoomIn'),
       lbZoomOut=document.getElementById('lbZoomOut'), lbReset=document.getElementById('lbReset'),
+      lbPrev=document.getElementById('lbPrev'), lbNext=document.getElementById('lbNext'),
       themeToggle=document.getElementById('themeToggle');
 let current='ALL', currentPart='ALL', lbPair={a:'',o:'',showOrig:false}, lbZoom=1;
+let lbItems=[], lbIndex=-1;
 let lbBaseW=0, lbBaseH=0;
 let lbDragging=false, lbDragX=0, lbDragY=0, lbStartLeft=0, lbStartTop=0;
 let lbMoved=false;
@@ -438,8 +465,11 @@ function render(data){
   summary.querySelectorAll('.stat.clickable').forEach(card=>card.onclick=()=>setResultFilter(card.dataset.f));
   buildPartFilters(data.by_part);
   grid.innerHTML='';
+  lbItems=[];
   for(const it of data.results){
     if(it.error){ continue; }
+    const imgIndex=lbItems.length;
+    lbItems.push({a:it.annotated_url, o:it.original_url});
     const div=document.createElement('div');
     const normalizedResult = it.result === 'NEEDS_REVIEW' ? 'NEEDS_REVIEW' : (it.result || 'NEEDS_REVIEW');
     div.className='card'; div.dataset.result=normalizedResult; div.dataset.part=it.part||'default';
@@ -455,7 +485,7 @@ function render(data){
         <div class="def">${defTxt}</div>
         <div class="name">${it.name}</div>
       </div>`;
-    div.querySelector('img').onclick=()=>openLb(it.annotated_url,it.original_url);
+    div.querySelector('img').onclick=()=>openLbAt(imgIndex);
     grid.appendChild(div);
   }
   if(!grid.children.length){
@@ -500,20 +530,55 @@ function setLightboxImage(src){
  lbImg.ondragstart=e=>e.preventDefault();
  lbImg.src=src;
 }
+function setToggleLabel(){
+ lbToggle.title=lbPair.showOrig?'Show annotated image':'Show original image';
+ lbToggle.setAttribute('aria-label', lbToggle.title);
+}
+function setNavState(){
+ const canNav = lbItems.length > 1;
+ lbPrev.disabled = !canNav;
+ lbNext.disabled = !canNav;
+}
+function showLightboxItem(index){
+ if(!lbItems.length) return;
+ lbIndex=((index % lbItems.length) + lbItems.length) % lbItems.length;
+ const keepOriginal = lbPair.showOrig;
+ lbPair={a:lbItems[lbIndex].a, o:lbItems[lbIndex].o, showOrig:keepOriginal};
+ setToggleLabel();
+ setLightboxImage(lbPair.showOrig ? lbPair.o : lbPair.a);
+}
+function showPrevImage(){
+ if(lbItems.length < 2) return;
+ resetZoom();
+ showLightboxItem(lbIndex-1);
+}
+function showNextImage(){
+ if(lbItems.length < 2) return;
+ resetZoom();
+ showLightboxItem(lbIndex+1);
+}
 function closeLb(){
  lb.style.display='none';
  document.body.style.overflow='';
 }
-function openLb(a,o){ lbPair={a,o,showOrig:false}; lbToggle.title='Show original image';
+function openLbAt(index){
+ if(!lbItems.length) return;
+ lbPair.showOrig=false;
+ setToggleLabel();
+ setNavState();
  document.body.style.overflow='hidden';
- lb.style.display='flex'; resetZoom(); setLightboxImage(a); }
+ lb.style.display='flex';
+ resetZoom();
+ showLightboxItem(index);
+}
 lbToggle.onclick=()=>{ lbPair.showOrig=!lbPair.showOrig;
  setLightboxImage(lbPair.showOrig?lbPair.o:lbPair.a);
- lbToggle.title=lbPair.showOrig?'Show annotated image':'Show original image';
- lbToggle.setAttribute('aria-label', lbToggle.title); };
+ setToggleLabel(); };
 lbZoomIn.onclick=()=>setZoom(lbZoom+0.25);
 lbZoomOut.onclick=()=>setZoom(lbZoom-0.25);
 lbReset.onclick=()=>resetZoom();
+lbPrev.onclick=()=>showPrevImage();
+lbNext.onclick=()=>showNextImage();
 lbStage.onwheel=e=>{ if(lb.style.display==='flex'){ e.preventDefault(); setZoom(lbZoom + (e.deltaY<0 ? 0.2 : -0.2)); } };
 lbClose.onclick=()=>closeLb();
 lb.onclick=e=>{ if(e.target===lb){ closeLb(); } };
@@ -543,9 +608,10 @@ window.addEventListener('mouseup', ()=>{
  updateDragCursor();
 });
 window.addEventListener('keydown', e=>{
- if(e.key === 'Escape' && lb.style.display==='flex'){
-   closeLb();
- }
+ if(lb.style.display!=='flex') return;
+ if(e.key === 'Escape'){ closeLb(); return; }
+ if(e.key === 'ArrowLeft'){ e.preventDefault(); showPrevImage(); return; }
+ if(e.key === 'ArrowRight'){ e.preventDefault(); showNextImage(); }
 });
 window.addEventListener('resize', ()=>{ if(lb.style.display==='flex') fitImageToStage(); });
 </script>
