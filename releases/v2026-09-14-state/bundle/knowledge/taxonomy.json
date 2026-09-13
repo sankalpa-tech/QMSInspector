@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "note": "SINGLE SOURCE OF TRUTH for parts + defect taxonomy. Every module (annotate_aes2, train, build, inspect) reads names / severity / colors from here via taxonomy.py. To add or rename a defect, edit ONLY this file, then run: python qms.py build.",
+
+  "default_part": "Bearing Cup",
+  "parts": ["Bearing Cup", "Bracket"],
+
+  "default_severity": 2,
+
+  "note_defects": "Bearing Cup uses domain-standard metal-forming defect names; Bracket uses the domain-standard electroplating/surface-finish names from the dataset. Legacy/generic names are kept as aliases so older data still resolves.",
+
+  "defects": {
+    "Dent": {
+      "severity": 4,
+      "color": [0, 140, 255],
+      "aliases": ["dent", "ding", "deformation on inner rim", "notch / dent on outer flange", "cut", "missing material", "torn", "crack", "broken"],
+      "description": "Any localised edge, rim, flange, or collar damage on the bearing cup."
+    },
+    "Out-of-Round": {
+      "severity": 4,
+      "color": [0, 90, 255],
+      "aliases": ["deformation", "out-of-round", "out of round", "ovality", "ovalised", "pinched", "bent", "distortion"],
+      "description": "Central bore is not a clean circle - one side pinched, dented inward or ovalised (out-of-round)."
+    },
+    "Corrosion": {
+      "severity": 2,
+      "color": [30, 90, 160],
+      "aliases": ["corrosion", "rust", "oxidation", "scratch"],
+      "description": "Brown/orange mottled corrosion or rust on the drawn wall or face."
+    },
+    "Black Mark After Electroplating": {
+      "severity": 2,
+      "color": [40, 40, 220],
+      "aliases": ["black mark after electroplating", "black mark"],
+      "description": "Dark/black blemish left on the surface after the electroplating process."
+    },
+    "Electroplating Defect": {
+      "severity": 2,
+      "color": [0, 165, 255],
+      "aliases": ["electroplating defect", "electroplat", "plating defect"],
+      "description": "A flaw in the electroplated finish - uneven, pitted, blistered or missing plating."
+    },
+    "Incomplete Embossing": {
+      "severity": 3,
+      "color": [255, 90, 0],
+      "aliases": ["incomplete embossing", "embossing"],
+      "description": "Embossed feature is not fully formed - shallow, partial or missing impression."
+    },
+    "Line Defect": {
+      "severity": 2,
+      "color": [0, 220, 255],
+      "aliases": ["line defect", "line", "streak"],
+      "description": "A long straight line/streak flaw across the surface."
+    },
+    "Serration": {
+      "severity": 3,
+      "color": [200, 0, 200],
+      "aliases": ["serration", "serrated edge"],
+      "description": "Saw-tooth / jagged serrated deformation along an edge."
+    },
+
+    "OK": {
+      "severity": 0,
+      "color": [0, 180, 0],
+      "aliases": ["ok", "pass", "no defect"],
+      "description": "No defect present - the part passes inspection."
+    }
+  }
+}

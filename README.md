@@ -78,6 +78,20 @@ Inspection never calls any external service.
 pip install -r requirements.txt
 ```
 
+## Release snapshot
+
+This project treats the reviewed data and taxonomy as the source of truth, while
+`data/inspection_memory.db` and `models/best.pt` are generated runtime artifacts.
+To save a versioned inspection state for later recovery, create a release snapshot:
+
+```powershell
+python release_snapshot.py --tag v2026-09-14-state
+```
+
+This writes a snapshot under `releases/<tag>/` with a JSON manifest containing
+SHA256 hashes for the current reviews, taxonomy, database, and model. The snapshot
+also copies the current runtime bundle so you can restore a known-good state later.
+
 ## Usage
 
 ```powershell

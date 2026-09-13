@@ -1,0 +1,27 @@
+{
+  "IMG20260824162142": {
+    "was": "reject paint mark on bottom flange",
+    "true_label": "Corrosion",
+    "note": "Missed the rust/corrosion mark on first pass."
+  },
+  "IMG20260824162425": {
+    "was": "reject paint mark / rough inner-bore edge",
+    "true_label": "Dent",
+    "note": "Missed the top-flange cut (same defect type as 162340); scan whole edge."
+  },
+  "IMG20260824161920": {
+    "was": "reject paint mark on inner wall",
+    "true_label": "Out-of-Round",
+    "note": "Missed the pinched bore; the deformation is the primary (higher-severity) defect."
+  },
+  "IMG20260824161530": {
+    "was": "notch mask traced whole rim",
+    "true_label": "Dent",
+    "note": "edge-seg locked onto the bright rim; use a tiny tight box, no edge-seg."
+  },
+  "IMG20260824162340": {
+    "was": "boxed red paint + inner rim (edge-seg traced wrong contour)",
+    "true_label": "Dent",
+    "note": "Paint is only the reject MARK; the real cut is the step on the outer flange silhouette nearby. Hunt the edge geometry, not the paint."
+  }
+}
