@@ -113,6 +113,17 @@ python qms.py inspect "C:\path\to\folder" --no-collect      # don't copy
 python qms.py stats
 ```
 
+The inspection state is grouped under `inspection_state/`:
+
+```text
+inspection_state/
+  data/
+  knowledge/
+  models/
+  reviews/
+```
+
+
 ### REST API (also offline)
 
 ```powershell
@@ -185,26 +196,29 @@ inspector/
   knowledge_base.py        SQLite inspection memory + knowledge cache
   renderer.py              draws defect masks / labels / banners
   recognizer.py            offline packed-model recall (the inspect engine)
-  model_builder.py         packs everything into models/best.pt
-  trainer.py               trains all parts from reviews/
+  model_builder.py         packs everything into inspection_state/models/best.pt
+  trainer.py               trains all parts from inspection_state/reviews/
   live_classifier.py       kNN + rule engine used by the REST API
   live_trainer.py          runtime add/correct used by the REST API
   web_api.py               Flask REST server (offline)
-knowledge_base/            taxonomy.json, lessons.json, corrections.json
-reviews/                   bearing_cup.json, bracket.json (human markings)
-models/best.pt             the packed model
-data/inspection_memory.db durable learned memory
+inspection_state/
+  knowledge/              taxonomy.json, lessons.json, corrections.json
+  reviews/                 bearing_cup.json, bracket.json (human markings)
+  models/best.pt           the packed model
+  data/inspection_memory.db durable learned memory
 ```
 
 ### Folder purpose summary
 
-- `data/` - local runtime data, including the main SQLite database
-- `data/inspection_memory.db` - durable learning memory and prior inspection history
-- `reviews/` - human-reviewed sample annotations for each part
-- `knowledge_base/` - taxonomy, defect definitions, and training guidance
-- `models/` - built inspection model package used for offline inference
+- `inspection_state/` - the grouped inspection state bundle
+- `inspection_state/data/` - local runtime data, including the main SQLite database
+- `inspection_state/data/inspection_memory.db` - durable learning memory and prior inspection history
+- `inspection_state/reviews/` - human-reviewed sample annotations for each part
+- `inspection_state/knowledge/` - taxonomy, defect definitions, and training guidance
+- `inspection_state/models/` - built inspection model package used for offline inference
 - `inspect_out/` - generated annotated inspection outputs
 - `uncertain/` - images that did not match confidently and need human review
 
 All inspection is local and free. The only durable state you need to keep is
-`data/inspection_memory.db`, `models/best.pt`, `reviews/`, and `knowledge_base/`.
+`inspection_state/data/inspection_memory.db`, `inspection_state/models/best.pt`,
+`inspection_state/reviews/`, and `inspection_state/knowledge/`.

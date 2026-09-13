@@ -21,12 +21,23 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_SOURCE_PATHS = [
-    "reviews",
-    "knowledge",
-    "data/inspection_memory.db",
-    "models/best.pt",
-]
+STATE_DIR = ROOT / "inspection_state"
+
+
+def default_source_paths() -> list[str]:
+    if STATE_DIR.exists():
+        return [
+            "inspection_state/reviews",
+            "inspection_state/knowledge",
+            "inspection_state/data/inspection_memory.db",
+            "inspection_state/models/best.pt",
+        ]
+    return [
+        "reviews",
+        "knowledge",
+        "data/inspection_memory.db",
+        "models/best.pt",
+    ]
 
 
 def sha256_file(path: Path) -> str:
@@ -69,13 +80,14 @@ def git_commit() -> str | None:
 
 
 def build_manifest(tag: str) -> dict:
-    files = iter_files(DEFAULT_SOURCE_PATHS)
+    paths = default_source_paths()
+    files = iter_files(paths)
     manifest = {
         "release": tag,
         "created_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "git_commit": git_commit(),
         "root": str(ROOT.relative_to(ROOT)),
-        "source_bundle": DEFAULT_SOURCE_PATHS,
+        "source_bundle": paths,
         "files": [],
     }
     for path in files:
@@ -94,16 +106,14 @@ def copy_release_artifacts(tag: str, manifest_path: Path) -> None:
     shutil.rmtree(bundle_dir, ignore_errors=True)
     bundle_dir.mkdir(parents=True, exist_ok=True)
 
-    for rel in ["reviews", "knowledge"]:
+    for rel in default_source_paths():
         src = ROOT / rel
+        if not src.exists():
+            continue
         dst = bundle_dir / rel
-        if src.exists():
+        if src.is_dir():
             shutil.copytree(src, dst, dirs_exist_ok=True)
-
-    for rel in ["data/inspection_memory.db", "models/best.pt"]:
-        src = ROOT / rel
-        if src.exists():
-            dst = bundle_dir / rel
+        else:
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
 

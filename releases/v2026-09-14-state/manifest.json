@@ -1,52 +1,52 @@
 {
   "release": "v2026-09-14-state",
-  "created_at_utc": "2026-09-13T20:40:55Z",
-  "git_commit": "190604845b0a293a221080d1fbe5b011e80c72e2",
+  "created_at_utc": "2026-09-13T20:45:48Z",
+  "git_commit": "2667bd1e4b94626a5e8f0a22afec76a2274d3b45",
   "root": ".",
   "source_bundle": [
-    "reviews",
-    "knowledge",
-    "data/inspection_memory.db",
-    "models/best.pt"
+    "inspection_state/reviews",
+    "inspection_state/knowledge",
+    "inspection_state/data/inspection_memory.db",
+    "inspection_state/models/best.pt"
   ],
   "files": [
     {
-      "path": "data/inspection_memory.db",
-      "sha256": "e32ef8a245656fa1f85d2d40024c9e25e497b136a6bf67272e5f2a2e3968d32b",
+      "path": "inspection_state/data/inspection_memory.db",
+      "sha256": "9ba6ef1cd65a3f31045dce1130e9d3e1821fcf2a59bd7fb477c3f17b566f4fb8",
       "size_bytes": 49152
     },
     {
-      "path": "knowledge/corrections.json",
+      "path": "inspection_state/knowledge/corrections.json",
       "sha256": "11976dff7fcd131b328e0d62b93b2e0d781a2329eab3e0b671072fe5d695bf57",
       "size_bytes": 1067
     },
     {
-      "path": "knowledge/defect_kb.json",
-      "sha256": "59f59fec55e424bfcb5e170742491423b10b85a9b3cfa3a6f116de101ac97287",
+      "path": "inspection_state/knowledge/defect_kb.json",
+      "sha256": "b7a2b96a9d0bdc34009a69af7ff130a2c9eeacb7bc1772031278680632c94f8a",
       "size_bytes": 10905
     },
     {
-      "path": "knowledge/lessons.json",
+      "path": "inspection_state/knowledge/lessons.json",
       "sha256": "213f5a8a1362949e30aa1ff3a18e96aff56b9c34b241a5b49cad5c8f85ee81e4",
       "size_bytes": 5389
     },
     {
-      "path": "knowledge/taxonomy.json",
+      "path": "inspection_state/knowledge/taxonomy.json",
       "sha256": "fab493205b5f5e60737fb88a5d854ff299bee342e1595e6999540e55541646fb",
       "size_bytes": 2945
     },
     {
-      "path": "models/best.pt",
-      "sha256": "887d7a034453a4d147eb1e74bf18f85b0d32eb4e336b3b4dcfec50b09dc58b6b",
+      "path": "inspection_state/models/best.pt",
+      "sha256": "1b6bc9b669b21dc3eeda791ffa5117f384806fbf0522f4d8ed010bd2c6a7d849",
       "size_bytes": 42310
     },
     {
-      "path": "reviews/bearing_cup.json",
+      "path": "inspection_state/reviews/bearing_cup.json",
       "sha256": "2121611fe5f17366c6127142fb79ed898079fbb974106af3949137cc7c137a4e",
       "size_bytes": 5766
     },
     {
-      "path": "reviews/bracket.json",
+      "path": "inspection_state/reviews/bracket.json",
       "sha256": "948bf7c98d2daf90ef675e4c531a948f0b53df9256c601fe1d47ff4bbab16c5b",
       "size_bytes": 48777
     }

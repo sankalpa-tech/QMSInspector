@@ -1,17 +1,18 @@
 """Central configuration for QMSInspector.
-
+ 
 Every path and tunable resolves from an environment variable first, then falls
 back to an in-repo default, so the project is portable across machines. There is
 NO cloud/LLM configuration here - inspection is 100% offline and token-free.
-
+ 
 Environment variables (all optional):
-  QMS_DATA_DIR        images to inspect            (default: <root>/data/images)
+  QMS_STATE_DIR       inspection state root        (default: <root>/inspection_state)
+  QMS_DATA_DIR        images to inspect            (default: <state>/data/images)
   QMS_OUT_DIR         annotated outputs            (default: <root>/inspect_out)
-  QMS_UNCERTAIN_DIR   collected UNCERTAIN images   (default: <root>/uncertain)
-  QMS_MODEL_PATH      packed checkpoint            (default: <root>/models/best.pt)
-  QMS_DB_PATH         inspection memory database   (default: <root>/data/inspection_memory.db)
+  QMS_UNCERTAIN_DIR   collected Needs Review images(default: <root>/uncertain)
+  QMS_MODEL_PATH      packed checkpoint            (default: <state>/models/best.pt)
+  QMS_DB_PATH         inspection memory database   (default: <state>/data/inspection_memory.db)
   QMS_AES_DIR         external image folder        (default: legacy AES2 path)
-  QMS_PHASH_RECALL_MAX  near-duplicate threshold   (default: 6)
+  QMS_PHASH_RECALL_MAX near-duplicate threshold     (default: 6)
   QMS_LOG_LEVEL       logging level                (default: INFO)
 """
 from __future__ import annotations
@@ -23,34 +24,40 @@ ROOT = os.path.dirname(PACKAGE_DIR)
 
 
 def _p(env, *default_parts):
-    v = os.environ.get(env)
-    return v if v else os.path.join(ROOT, *default_parts)
+   v = os.environ.get(env)
+   return v if v else os.path.join(ROOT, *default_parts)
+
+
+STATE_DIR = os.environ.get("QMS_STATE_DIR", os.path.join(ROOT, "inspection_state"))
+LEGACY_STATE_DIR = ROOT
+if not os.path.exists(os.path.join(STATE_DIR, "data")) and not os.path.exists(os.path.join(STATE_DIR, "reviews")):
+   STATE_DIR = LEGACY_STATE_DIR
 
 
 # --- inputs / outputs ---
-DATA_DIR = _p("QMS_DATA_DIR", "data", "images")
+DATA_DIR = _p("QMS_DATA_DIR", STATE_DIR, "data", "images")
 OUT_DIR = _p("QMS_OUT_DIR", "inspect_out")
 UNCERTAIN_DIR = _p("QMS_UNCERTAIN_DIR", "uncertain")
 
 # --- durable learnings ---
-MODEL_PATH = _p("QMS_MODEL_PATH", "models", "best.pt")
-DB_PATH = _p("QMS_DB_PATH", "data", "inspection_memory.db")
-LEGACY_DB_PATH = _p("QMS_DB_PATH", "data", "learning.db")
+MODEL_PATH = _p("QMS_MODEL_PATH", STATE_DIR, "models", "best.pt")
+DB_PATH = _p("QMS_DB_PATH", STATE_DIR, "data", "inspection_memory.db")
+LEGACY_DB_PATH = _p("QMS_DB_PATH", "data", "inspection_memory.db")
 if not os.path.exists(DB_PATH) and os.path.exists(LEGACY_DB_PATH):
-    DB_PATH = LEGACY_DB_PATH
+   DB_PATH = LEGACY_DB_PATH
 
 # --- knowledge base / taxonomy ---
 LEGACY_KNOWLEDGE_DIR = os.path.join(ROOT, "knowledge")
-KNOWLEDGE_DIR = os.environ.get("QMS_KNOWLEDGE_DIR", os.path.join(ROOT, "knowledge_base"))
+KNOWLEDGE_DIR = os.environ.get("QMS_KNOWLEDGE_DIR", os.path.join(STATE_DIR, "knowledge"))
 if not os.path.exists(KNOWLEDGE_DIR) and os.path.exists(LEGACY_KNOWLEDGE_DIR):
-    KNOWLEDGE_DIR = LEGACY_KNOWLEDGE_DIR
+   KNOWLEDGE_DIR = LEGACY_KNOWLEDGE_DIR
 TAXONOMY_PATH = os.environ.get("QMS_TAXONOMY_PATH", os.path.join(KNOWLEDGE_DIR, "taxonomy.json"))
 LESSONS_PATH = os.path.join(KNOWLEDGE_DIR, "lessons.json")
 CORRECTIONS_PATH = os.path.join(KNOWLEDGE_DIR, "corrections.json")
 CACHE_PATH = os.path.join(KNOWLEDGE_DIR, "defect_kb.json")
 
 # --- per-part human markings (one <part>.json per part) ---
-REVIEWS_DIR = os.path.join(ROOT, "reviews")
+REVIEWS_DIR = os.path.join(STATE_DIR, "reviews")
 
 # Optional external image folder for parts whose photos live outside the repo
 # (e.g. the original AES2 Bearing Cup captures). Overridable; not hardcoded.
