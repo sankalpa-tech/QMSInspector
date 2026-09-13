@@ -32,7 +32,7 @@ This is useful when the same parts are inspected repeatedly and the goal is to:
 - `Review` - a human-validated marking that defines what is good or defective on a sample image.
 - `Train` - the process of adding reviewed examples into the local memory so the system can recognize them later.
 - `Needs Review` - the safe fallback state when the image does not match any known example confidently.
-- `Inspection Memory` - the local SQLite database that stores learned examples and prior inspection history.
+- `Inspection Memory DB` - the local SQLite database that stores learned examples and prior inspection history.
 - `Model` - the packaged local model built from the learned data for offline inference.
 
 ### Workflow diagram
@@ -43,7 +43,7 @@ flowchart TD
     B --> C[Train samples]
 
     K[Taxonomy] --> C
-    M[Inspection Memory DB] --> C
+    M[Learning DB] --> C
 
     C --> D[Build model]
     D --> E[Inspect image]
@@ -191,13 +191,13 @@ inspector/
 knowledge_base/            taxonomy.json, lessons.json, corrections.json
 reviews/                   bearing_cup.json, bracket.json (human markings)
 models/best.pt             the packed model
-data/inspection_memory.db  durable learned memory
+data/inspection_memory.db durable learned memory
 ```
 
 ### Folder purpose summary
 
 - `data/` - local runtime data, including the main SQLite database
-- `data/inspection_memory.db` - durable inspection memory and learned examples
+- `data/inspection_memory.db` - durable learning memory and prior inspection history
 - `reviews/` - human-reviewed sample annotations for each part
 - `knowledge_base/` - taxonomy, defect definitions, and training guidance
 - `models/` - built inspection model package used for offline inference

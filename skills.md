@@ -148,9 +148,9 @@ Current user/domain preference:
 
 - Favor clear, professional UX over noisy styling or unnecessary complexity
 - Keep terminology clear for non-technical users
-- If changing labels, keep `reviews`, `learning.db`, and `best.pt` aligned
+- If changing labels, keep `reviews`, `inspection_memory.db`, and `best.pt` aligned
 - After model or renderer changes, restart the server and regenerate run outputs
 - When the UI still shows old results, first suspect:
   1. old running server
   2. old `inspection_runs` output
-  3. stale learned exemplar rows in `data\learning.db`
+  3. stale learned exemplar rows in `data\inspection_memory.db`

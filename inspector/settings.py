@@ -34,8 +34,8 @@ UNCERTAIN_DIR = _p("QMS_UNCERTAIN_DIR", "uncertain")
 
 # --- durable learnings ---
 MODEL_PATH = _p("QMS_MODEL_PATH", "models", "best.pt")
-LEGACY_DB_PATH = _p("QMS_DB_PATH", "data", "learning.db")
 DB_PATH = _p("QMS_DB_PATH", "data", "inspection_memory.db")
+LEGACY_DB_PATH = _p("QMS_DB_PATH", "data", "learning.db")
 if not os.path.exists(DB_PATH) and os.path.exists(LEGACY_DB_PATH):
     DB_PATH = LEGACY_DB_PATH
 
