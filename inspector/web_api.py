@@ -16,29 +16,46 @@ Run:
 from __future__ import annotations
 import os
 import time
+import uuid
+import glob
+import shutil
+import zipfile
 import threading
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, Response
 
 from . import knowledge_base as kb
 from . import live_trainer as LEARN
 from . import live_classifier as INS
+from . import recognizer as REC
+from . import demo_page
 from . import settings
 
 ROOT = settings.ROOT
 UPLOAD_DIR = os.path.join(ROOT, "uploads")
+DEMO_DIR = os.path.join(ROOT, "demo_runs")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(DEMO_DIR, exist_ok=True)
+
+IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 512 * 1024 * 1024  # 512 MB bulk uploads
 _lock = threading.Lock()
 
 # in-memory state, reloaded after each learn
-_state = {"cache": None, "exemplars": None}
+_state = {"cache": None, "exemplars": None, "model": None}
 
 
 def _reload():
     _state["cache"] = kb.load_cache()
     _state["exemplars"] = INS._load_exemplar_matrix()
+
+
+def _model():
+    if _state["model"] is None:
+        _state["model"] = REC.load_model(settings.MODEL_PATH)
+    return _state["model"]
 
 
 def _ensure_loaded():
@@ -157,6 +174,118 @@ def stats_ep():
         "ORDER BY id DESC LIMIT 10").fetchall()]
     con.close()
     return jsonify({"counts": _state["cache"].get("counts", {}), "recent_inspections": recent})
+
+
+def _iter_uploaded_images(run_in_dir):
+    """Save every uploaded image (and every image inside uploaded .zip) into
+    run_in_dir. Returns a sorted list of saved image paths."""
+    saved = []
+    all_files = []
+    for key in request.files:
+        all_files.extend(request.files.getlist(key))
+    for fs in all_files:
+        fname = os.path.basename(fs.filename or "")
+        if not fname:
+            continue
+        ext = os.path.splitext(fname)[1].lower()
+        if ext == ".zip":
+            zpath = os.path.join(run_in_dir, fname)
+            fs.save(zpath)
+            try:
+                with zipfile.ZipFile(zpath) as zf:
+                    for member in zf.namelist():
+                        mext = os.path.splitext(member)[1].lower()
+                        if mext in IMAGE_EXTS and not member.endswith("/"):
+                            target = os.path.join(run_in_dir, os.path.basename(member))
+                            with zf.open(member) as src, open(target, "wb") as dst:
+                                shutil.copyfileobj(src, dst)
+                            saved.append(target)
+            except zipfile.BadZipFile:
+                pass
+            finally:
+                os.remove(zpath)
+        elif ext in IMAGE_EXTS:
+            target = os.path.join(run_in_dir, fname)
+            fs.save(target)
+            saved.append(target)
+    # de-dup while keeping order
+    seen, out = set(), []
+    for p in sorted(saved):
+        if p not in seen:
+            seen.add(p)
+            out.append(p)
+    return out
+
+
+@app.get("/")
+def demo_home():
+    return Response(demo_page.HTML, mimetype="text/html")
+
+
+@app.post("/demo/inspect")
+def demo_inspect():
+    """Bulk inspection for the demo UI: accepts many images and/or .zip files.
+    Runs the offline packed model (0 tokens) and returns per-image verdicts plus
+    URLs to the annotated + original images."""
+    run_id = time.strftime("%Y%m%d-%H%M%S-") + uuid.uuid4().hex[:6]
+    run_dir = os.path.join(DEMO_DIR, run_id)
+    in_dir = os.path.join(run_dir, "in")
+    out_dir = os.path.join(run_dir, "out")
+    os.makedirs(in_dir, exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
+
+    images = _iter_uploaded_images(in_dir)
+    if not images:
+        return jsonify({"error": "no images found; upload image files or a .zip of images"}), 400
+
+    model = _model()
+    results = []
+    counts = {"RESOLVED": 0, "UNCERTAIN": 0, "OK": 0, "DEFECT": 0}
+    with _lock:
+        for p in images:
+            base = os.path.splitext(os.path.basename(p))[0]
+            try:
+                verdict, status, out_img = REC.inspect(p, model, out_dir, uncertain_dir=None)
+            except Exception as e:  # noqa
+                results.append({"name": os.path.basename(p), "error": str(e)})
+                continue
+            resolved = status.startswith("RESOLVED")
+            result = verdict.get("result", "UNCERTAIN")
+            counts["RESOLVED" if resolved else "UNCERTAIN"] += 1
+            if result in ("OK", "DEFECT"):
+                counts[result] += 1
+            defects = [{"type": d.get("type"), "severity": d.get("severity_priority"),
+                        "location": d.get("location"), "primary": d.get("primary", False)}
+                       for d in verdict.get("defects", [])]
+            results.append({
+                "name": os.path.basename(p),
+                "part": verdict.get("part", "default"),
+                "part_confident": verdict.get("part_confident", False),
+                "status": "RESOLVED" if resolved else "UNCERTAIN",
+                "result": result,
+                "defects": defects,
+                "primary_defect": (defects[0]["type"] if defects else None),
+                "annotated_url": f"/demo/file/{run_id}/out/{os.path.basename(out_img)}",
+                "original_url": f"/demo/file/{run_id}/in/{os.path.basename(p)}",
+            })
+    # DEFECT first, then UNCERTAIN, then OK, for an at-a-glance review order
+    order = {"DEFECT": 0, "UNCERTAIN": 1, "OK": 2}
+    results.sort(key=lambda r: (r.get("part", ""), order.get(r.get("result"), 3)))
+    by_part = {}
+    for r in results:
+        by_part.setdefault(r.get("part", "default"), {"total": 0, "DEFECT": 0, "OK": 0, "UNCERTAIN": 0})
+        by_part[r["part"]]["total"] += 1
+        by_part[r["part"]][r["result"]] = by_part[r["part"]].get(r["result"], 0) + 1
+    return jsonify({"run_id": run_id, "total": len(images),
+                    "counts": counts, "by_part": by_part, "results": results})
+
+
+@app.get("/demo/file/<run_id>/<kind>/<path:fname>")
+def demo_file(run_id, kind, fname):
+    if kind not in ("in", "out"):
+        return jsonify({"error": "bad path"}), 404
+    folder = os.path.join(DEMO_DIR, os.path.basename(run_id), kind)
+    return send_from_directory(folder, fname)
 
 
 def main():

@@ -62,6 +62,7 @@ def inspect(path, m, out_dir, uncertain_dir=None):
 
     E = m["exemplars"]
     phashes, names, labels = E["phash"], E["names"], E["labels"]
+    parts = E.get("parts", ["default"] * len(names))
     th = m["thresholds"]
 
     # zero-token perceptual-hash recall
@@ -82,6 +83,7 @@ def inspect(path, m, out_dir, uncertain_dir=None):
     if recalled:
         ref = names[best_i]
         geo = m["geometry"].get(ref, {"defects": [], "result": labels[best_i]})
+        part = geo.get("part") or parts[best_i]
         dets = geo.get("defects", [])
         result = geo.get("result") or ("DEFECT" if dets else "OK")
         conf = 96 if best_h == 0 else 88
@@ -90,23 +92,27 @@ def inspect(path, m, out_dir, uncertain_dir=None):
         elif result == "OK":
             A.draw_ok_banner(img)
         sdets = sorted(dets, key=lambda d: _priority(d.get("category", ""), m["severity_rules"]), reverse=True)
-        verdict = {"result": result, "defects": [] if result == "OK" else [{
+        verdict = {"result": result, "part": part, "part_confident": True,
+                   "defects": [] if result == "OK" else [{
             "type": d["category"], "confidence": conf,
             "location": d.get("location", "see box"), "reason": d.get("reason", ""),
             "severity_priority": _priority(d["category"], m["severity_rules"]),
             "primary": (i == 0)} for i, d in enumerate(sdets)]}
-        status = f"RESOLVED (recall '{ref}' hamming={best_h}, conf={conf}) -> 0 LLM tokens"
+        status = f"RESOLVED (part={part}, recall '{ref}' hamming={best_h}, conf={conf}) -> 0 LLM tokens"
     else:
         # nearest-prototype hint (kNN), still local
         Xn = (m["_X"] - m["_mean"]) / m["_std"]
         xn = (x - m["_mean"]) / m["_std"]
         dists = np.sqrt(((Xn - xn) ** 2).sum(axis=1)) if len(Xn) else np.array([])
-        hint = ", ".join(f"{labels[i]}({dists[i]:.1f})" for i in np.argsort(dists)[:3]) if len(dists) else ""
-        verdict = {"result": "UNCERTAIN", "defects": [], "hint": hint}
+        order = np.argsort(dists) if len(dists) else []
+        part = parts[order[0]] if len(order) else "default"   # nearest-neighbour part guess
+        hint = ", ".join(f"{labels[i]}({dists[i]:.1f})" for i in order[:3]) if len(dists) else ""
+        verdict = {"result": "UNCERTAIN", "part": part, "part_confident": False,
+                   "defects": [], "hint": hint}
         A.draw_label(img, 15, 45, "UNCERTAIN - needs review", (0, 140, 255))
         cv2.rectangle(img, (0, 0), (img.shape[1] - 1, img.shape[0] - 1), (0, 140, 255), 6)
         collected = _collect_uncertain(path, uncertain_dir)
-        status = f"TEACH_NEEDED (no recall; nearest: {hint})"
+        status = f"TEACH_NEEDED (likely part={part}; no recall; nearest: {hint})"
         if collected:
             status += f"; copied to {collected}"
 
