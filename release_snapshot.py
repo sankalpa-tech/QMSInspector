@@ -17,6 +17,7 @@ import hashlib
 import json
 import shutil
 import subprocess
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -103,7 +104,11 @@ def build_manifest(tag: str) -> dict:
 def copy_release_artifacts(tag: str, manifest_path: Path) -> None:
     release_dir = manifest_path.parent
     bundle_dir = release_dir / "bundle"
+    archive_path = release_dir / "inspection_state_bundle.zip"
+
     shutil.rmtree(bundle_dir, ignore_errors=True)
+    if archive_path.exists():
+        archive_path.unlink()
     bundle_dir.mkdir(parents=True, exist_ok=True)
 
     for rel in default_source_paths():
@@ -116,6 +121,13 @@ def copy_release_artifacts(tag: str, manifest_path: Path) -> None:
         else:
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
+
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for path in sorted(bundle_dir.rglob("*")):
+            if path.is_file():
+                zf.write(path, arcname=str(path.relative_to(release_dir)))
+
+    shutil.rmtree(bundle_dir, ignore_errors=True)
 
 
 def main() -> int:

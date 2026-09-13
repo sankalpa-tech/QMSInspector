@@ -91,7 +91,8 @@ python release_snapshot.py --tag v2026-09-14
 
 This writes a snapshot under `releases/<tag>/` with a JSON manifest containing
 SHA256 hashes for the current reviews, taxonomy, database, and model. The snapshot
-also copies the current runtime bundle so you can restore a known-good state later.
+also stores the current runtime state as an archived bundle so you can restore a
+known-good state later.
 
 ### Release snapshot policy
 
