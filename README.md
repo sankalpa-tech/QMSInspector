@@ -8,6 +8,22 @@ images entirely on your machine - **no cloud, no LLM, no API keys**.
 Needs Review images (ones the model has never seen) are set aside so a human can
 teach them later, closing the loop.
 
+### What this product does
+
+QMSInspector is a local inspection assistant for factory quality teams. It helps
+review manufactured parts by comparing incoming images against previously taught
+examples, highlighting known defects, and flagging anything unfamiliar for human
+review. Instead of sending images to the cloud or depending on a generic object
+model, it stays fully on the machine and learns from actual part-specific marks,
+defects, and pass/fail decisions from your own quality process.
+
+This is useful when the same parts are inspected repeatedly and the goal is to:
+
+- catch known defects quickly and consistently
+- avoid false certainty on unfamiliar images
+- keep full control of the inspection process offline
+- improve the system over time by teaching it new edge cases
+
 ---
 
 ## How it works
