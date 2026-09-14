@@ -1,0 +1,109 @@
+{
+  "part": "Bracket",
+  "default_part": false,
+  "description": "Flat stamped steel mounting bracket/strap. Two plain round through-holes at the top and center for bolts or pivot pins. One bottom hole has internal serrations/splines designed to mate with a matching serrated pin, bolt, or clip nut to resist rotation once assembled. 'VA' is embossed into the surface.",
+
+  "defects": {
+    "Fine Dark Speckling": {
+      "severity": 1,
+      "color": [80, 80, 200],
+      "aliases": ["fine dark speckling", "fine speckling", "fine dark speckle"],
+      "signature": "Sparse, sub-millimeter dark pixels/dots scattered individually across the plated surface. Each speck is barely larger than the surface grain texture and stays darker than the surrounding grain."
+    },
+    "Dark Speckling": {
+      "severity": 1,
+      "color": [60, 60, 220],
+      "aliases": ["dark speckling", "speckling", "dark speckles"],
+      "signature": "A denser, more visible scatter of small dark dots covering a localized patch. The dots are still individually resolvable, but the patch visibly dulls the local reflectivity."
+    },
+    "Dark Marks": {
+      "severity": 1,
+      "color": [40, 40, 220],
+      "aliases": ["dark marks", "dark mark", "black mark after electroplating", "black mark", "electroplating defect", "electroplat", "plating defect"],
+      "signature": "Discrete, irregular dark blemishes that are not dot-based. They appear as smudges, streaks, or small blotches with defined but non-geometric boundaries. Covers generic post-electroplating dark/plating blemishes."
+    },
+    "Dark Speckle Cluster": {
+      "severity": 2,
+      "color": [30, 70, 210],
+      "aliases": ["dark speckle cluster", "speckle cluster"],
+      "signature": "Multiple dark-speckling patches that coalesce or sit adjacent to one another, forming a larger irregular zone of degraded plating along an edge or corner."
+    },
+    "Medium Burn": {
+      "severity": 3,
+      "color": [0, 120, 255],
+      "aliases": ["medium burn", "burn"],
+      "signature": "A visibly darkened matte-to-charred area with a defined edge, where plating quality has broken down but base metal is not fully exposed."
+    },
+    "Dark Burn": {
+      "severity": 4,
+      "color": [0, 0, 180],
+      "aliases": ["dark burn", "burn-through", "burn through"],
+      "signature": "A sharply bordered solid black or near-black patch where plating has failed or burned through, often exposing bare or oxidized base metal."
+    },
+    "Line Mark": {
+      "severity": 2,
+      "color": [0, 220, 255],
+      "aliases": ["line mark", "line defect", "line", "streak"],
+      "signature": "A thin continuous straight or near-straight linear trace running across the plated surface. Straightness and continuity matter more than orientation."
+    },
+    "Serration Missing": {
+      "severity": 4,
+      "color": [200, 0, 200],
+      "aliases": ["serration missing", "missing serration", "serration", "serrated edge"],
+      "signature": "The designated serrated hole appears as a smooth round bore instead of a repeating tooth/scallop profile."
+    },
+    "White Mark": {
+      "severity": 1,
+      "color": [180, 220, 255],
+      "aliases": ["white mark", "pale mark", "washed-out mark"],
+      "signature": "A localized irregular pale patch that looks duller and less lustrous than the surrounding chromate finish. It reads as a loss of shine or color, not added debris."
+    },
+    "Incomplete/Shallow Embossing": {
+      "severity": 3,
+      "color": [255, 90, 0],
+      "aliases": ["incomplete/shallow embossing", "shallow embossing", "incomplete embossing", "embossing"],
+      "signature": "A stamped or embossed alphanumeric character is incompletely formed, shallow, faint, or illegible relative to the other character in the same mark."
+    },
+    "Embossing Missing": {
+      "severity": 4,
+      "color": [255, 40, 0],
+      "aliases": ["embossing missing", "missing embossing", "missing marking"],
+      "signature": "The required embossed mark is entirely absent from its designated location, with no trace of the expected characters."
+    },
+
+    "OK": {
+      "severity": 0,
+      "color": [0, 180, 0],
+      "aliases": ["ok", "pass", "no defect"],
+      "signature": "Continuous smooth bracket geometry with no dark speckling, dark marks, burns, line marks, serration loss, white marks, or embossing defects."
+    }
+  },
+
+  "rulings": [
+    "The part has exactly 3 holes: two plain round smooth-bore holes and one serrated splined/toothed-bore hole. Only the designated serrated hole is evaluated for tooth presence; a plain hole is supposed to be smooth.",
+    "Identify the serrated hole first as the fixed anatomical anchor before checking anything else. Locate all other features relative to it, never relative to the image frame.",
+    "If the designated serrated hole shows a smooth fully round bore instead of a scalloped/toothed edge, flag Serration Missing. Compare it to the part's own plain holes in the same image; if it looks identical to them, serration is missing.",
+    "The 'VA' embossing sits in the gap between the middle hole and the plain end-hole, on the side of the middle hole opposite the serrated hole. Never search for it on the serrated-hole side of the middle hole, regardless of image rotation or flip.",
+    "If the embossing zone is completely blank with no character relief, flag Embossing Missing. If at least one character is present but clearly shallower or fainter than the other character in the same mark, flag Incomplete/Shallow Embossing instead. These are mutually exclusive.",
+    "Before flagging Embossing Missing, rule out glare, shadow, dirt, or an out-of-frame crop over that zone. Only flag it when the zone is clearly visible, in focus, and unobstructed.",
+    "White Mark means a pale, dull, low-luster patch where the underlying brushed/machining grain is still visible through it. Do not confuse it with dark burns or dark speckling, which are darker than the surroundings.",
+    "Dark surface defects escalate by fill pattern and edge sharpness: fine dark speckling -> dark speckling -> dark marks -> dark speckle cluster -> medium burn -> dark burn. Classify by the highest-matching tier, not the lowest.",
+    "Line Mark is a long thin continuous straight or gently curved line, often spanning a large fraction of the part length and crossing over holes or embossing without breaking. A scratch is short, localized, and confined to one small zone.",
+    "When a line mark crosses a hole, keep it as one continuous defect box spanning the full visible length. Do not split it into separate boxes on either side of the hole.",
+    "Scan the ENTIRE part for EVERY defect type defined for this part family on every image: full outer profile, all three holes, both faces, and the embossing zone. Never stop after the first defect.",
+    "A defect type confirmed on one sample must be actively checked on all other samples in the set. Cross-apply every learned defect type across the full batch.",
+    "Capture multiple defects per image where present and list all of them; do not report only the most obvious one.",
+    "Ignore any defect finding below 60% confidence. Do not annotate or report it, but note if a borderline 55-60% case deserves a second look.",
+    "A part is OK only if it passes every checkpoint simultaneously: profile, both plain holes, serration presence, embossing presence/location/quality, plating uniformity, absence of white marks, absence of line marks/scratches, and absence of cracks/rust.",
+    "If confirmed defects are found in more than 10% of the images/parts in a batch, recommend rejecting the lot."
+  ],
+
+  "confusions": [
+    ["Dark Marks", "Dark Speckling", "OK"],
+    ["Dark Marks", "shadow/plating tint"],
+    ["Incomplete/Shallow Embossing", "Embossing Missing"],
+    ["Serration Missing", "splined-hole (design, not a defect)"],
+    ["White Mark", "glare/plating tint"],
+    ["Dark Speckling", "surface grain/plating texture"]
+  ]
+}

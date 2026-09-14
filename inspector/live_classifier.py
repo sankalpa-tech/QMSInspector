@@ -16,6 +16,15 @@ from . import knowledge_base as kb
 from . import image_features as F
 
 
+def _pick_category(available, *candidates):
+    available_lc = {(x or "").lower(): x for x in available}
+    for candidate in candidates:
+        found = available_lc.get(candidate.lower())
+        if found:
+            return found
+    return None
+
+
 def _load_exemplar_matrix(part=None):
     rows = kb.all_exemplars(confirmed_only=True, part=part)
     labels, vecs, names, phashes = [], [], [], []
@@ -46,7 +55,7 @@ def _knn_votes(x, labels, mat, mean, std, k, class_counts=None):
     return votes, neighbors
 
 
-def _rule_signals(vec, signals, th):
+def _rule_signals(vec, signals, th, part_cats):
     """Return list of (category, strength 0..1, reason, location)."""
     out = []
     region = signals.get("region_of", {})
@@ -55,52 +64,62 @@ def _rule_signals(vec, signals, th):
     if lf >= th["line_frac_weak"]:
         loc = region.get("line", "surface")
         ang = signals["lines"][0]["angle"] if signals.get("lines") else 0
-        out.append((
-            "line defect",
-            min(1.0, lf / th["line_frac_strong"]),
-            f"A straight line spanning ~{int(lf*100)}% of the part (angle {ang} deg) "
-            f"stands out from the normal brushed texture.",
-            loc,
-        ))
+        cat = _pick_category(part_cats, "Line Mark", "Line Defect")
+        if cat:
+            out.append((
+                cat,
+                min(1.0, lf / th["line_frac_strong"]),
+                f"A straight line spanning ~{int(lf*100)}% of the part (angle {ang} deg) "
+                f"stands out from the normal brushed texture.",
+                loc,
+            ))
 
     ds = vec["dark_score"]
     if ds >= th["dark_score_weak"]:
         loc = region.get("dark", "surface")
-        out.append((
-            "black mark after electroplating",
-            min(1.0, ds / th["dark_score_strong"]),
-            f"A localized dark mark (contrast {ds:.0f}) darker than its surroundings "
-            f"sits on top of otherwise normal plating.",
-            loc,
-        ))
+        cat = _pick_category(part_cats, "Dark Marks", "Black Mark After Electroplating")
+        if cat:
+            out.append((
+                cat,
+                min(1.0, ds / th["dark_score_strong"]),
+                f"A localized dark mark (contrast {ds:.0f}) darker than its surroundings "
+                f"sits on top of otherwise normal plating.",
+                loc,
+            ))
 
     if vec["center_contrast"] <= th["center_contrast_low"]:
-        out.append((
-            "incomplete embossing",
-            min(1.0, (th["center_contrast_low"] - vec["center_contrast"]) / th["center_contrast_low"] + 0.3),
-            f"Central relief contrast is low ({vec['center_contrast']:.1f}), consistent with a "
-            f"faint / partially missing 'VA' emboss.",
-            "center",
-        ))
+        cat = _pick_category(part_cats, "Incomplete/Shallow Embossing", "Incomplete Embossing")
+        if cat:
+            out.append((
+                cat,
+                min(1.0, (th["center_contrast_low"] - vec["center_contrast"]) / th["center_contrast_low"] + 0.3),
+                f"Central relief contrast is low ({vec['center_contrast']:.1f}), consistent with a "
+                f"faint / partially missing 'VA' emboss.",
+                "center",
+            ))
 
     if vec["hole_rough"] >= th["hole_rough_high"]:
-        out.append((
-            "serration",
-            min(1.0, vec["hole_rough"] / (th["hole_rough_high"] * 1.6)),
-            f"A round hole edge shows high roughness ({vec['hole_rough']:.0f}), suggesting a "
-            f"jagged/serrated edge rather than a clean bore.",
-            "hole edge",
-        ))
+        cat = _pick_category(part_cats, "Serration")
+        if cat:
+            out.append((
+                cat,
+                min(1.0, vec["hole_rough"] / (th["hole_rough_high"] * 1.6)),
+                f"A round hole edge shows high roughness ({vec['hole_rough']:.0f}), suggesting a "
+                f"jagged/serrated edge rather than a clean bore.",
+                "hole edge",
+            ))
 
     # electroplating defect: matte, low gloss, low colorfulness (dull uneven finish)
     if vec["gloss_hi_frac"] < 0.002 and vec["colorfulness"] < 12 and vec["v_std"] > 18:
-        out.append((
-            "electroplating defect",
-            0.5,
-            f"Finish looks dull/matte and uneven (low gloss, low colorfulness, brightness "
-            f"spread {vec['v_std']:.0f}) - possible non-uniform plating.",
-            "surface",
-        ))
+        cat = _pick_category(part_cats, "Electroplating Defect")
+        if cat:
+            out.append((
+                cat,
+                0.5,
+                f"Finish looks dull/matte and uneven (low gloss, low colorfulness, brightness "
+                f"spread {vec['v_std']:.0f}) - possible non-uniform plating.",
+                "surface",
+            ))
     return out
 
 
@@ -125,11 +144,9 @@ def decide(vec, signals, cache, labels, mat, log_note=None):
 
     # Rule signals reference specific defect names; only apply them if this part
     # actually uses that category (so new parts with new categories aren't polluted).
-    rules = _rule_signals(vec, signals or {"region_of": {}, "lines": []}, th)
+    rules = _rule_signals(vec, signals or {"region_of": {}, "lines": []}, th, part_cats)
     rule_by_cat = {}
     for cat, strength, reason, loc in rules:
-        if cat not in part_cats:
-            continue
         score[cat] = score.get(cat, 0.0) + 0.6 * strength
         if strength > rule_by_cat.get(cat, (0,))[0]:
             rule_by_cat[cat] = (strength, reason, loc)

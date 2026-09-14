@@ -1,21 +1,39 @@
 {
   "version": 2,
-  "updated_at": "2026-09-14T02:27:58",
+  "updated_at": "2026-09-14T17:49:17",
   "categories": [
-    "Black Mark After Electroplating",
-    "Electroplating Defect",
-    "Incomplete Embossing",
-    "Line Defect",
-    "Serration",
-    "OK"
+    "Dent",
+    "Out-of-Round",
+    "Corrosion",
+    "OK",
+    "Fine Dark Speckling",
+    "Dark Speckling",
+    "Dark Marks",
+    "Dark Speckle Cluster",
+    "Medium Burn",
+    "Dark Burn",
+    "Line Mark",
+    "Serration Missing",
+    "White Mark",
+    "Incomplete/Shallow Embossing",
+    "Embossing Missing"
   ],
   "signatures": {
-    "Black Mark After Electroplating": "Discrete dark/black smudge or spot sitting on top of otherwise normal plating; local darkening not explained by shadow.",
-    "Electroplating Defect": "Patch of abnormal/uneven plating - dull, matte or rough area where the finish did not deposit uniformly.",
-    "Incomplete Embossing": "Stamped 'VA' logo is partial, faint or missing strokes; low central relief contrast.",
-    "Line Defect": "A single distinct straight scratch/gouge line crossing the surface, standing out from the normal brushed micro-texture.",
-    "Serration": "Jagged/toothed edge on a hole that should be smooth (NOT the by-design splined bottom hole).",
-    "OK": "Uniform finish, complete emboss, no discrete mark/line, smooth round hole edges."
+    "Dent": "Use Dent as the single bearing-cup edge/rim damage category for any localised edge, rim, collar, or flange damage.",
+    "Out-of-Round": "Central bore is not a clean circle - one side pinched, dented inward or ovalised (out-of-round).",
+    "Corrosion": "Brown/orange mottled corrosion or rust on the drawn wall or face.",
+    "OK": "Smooth continuous outer flange, unbroken inner rim curve, round bore, no discrete dark mark, no missing material.",
+    "Fine Dark Speckling": "Sparse, sub-millimeter dark pixels/dots scattered individually across the plated surface. Each speck is barely larger than the surface grain texture and stays darker than the surrounding grain.",
+    "Dark Speckling": "A denser, more visible scatter of small dark dots covering a localized patch. The dots are still individually resolvable, but the patch visibly dulls the local reflectivity.",
+    "Dark Marks": "Discrete, irregular dark blemishes that are not dot-based. They appear as smudges, streaks, or small blotches with defined but non-geometric boundaries. Covers generic post-electroplating dark/plating blemishes.",
+    "Dark Speckle Cluster": "Multiple dark-speckling patches that coalesce or sit adjacent to one another, forming a larger irregular zone of degraded plating along an edge or corner.",
+    "Medium Burn": "A visibly darkened matte-to-charred area with a defined edge, where plating quality has broken down but base metal is not fully exposed.",
+    "Dark Burn": "A sharply bordered solid black or near-black patch where plating has failed or burned through, often exposing bare or oxidized base metal.",
+    "Line Mark": "A thin continuous straight or near-straight linear trace running across the plated surface. Straightness and continuity matter more than orientation.",
+    "Serration Missing": "The designated serrated hole appears as a smooth round bore instead of a repeating tooth/scallop profile.",
+    "White Mark": "A localized irregular pale patch that looks duller and less lustrous than the surrounding chromate finish. It reads as a loss of shine or color, not added debris.",
+    "Incomplete/Shallow Embossing": "A stamped or embossed alphanumeric character is incompletely formed, shallow, faint, or illegible relative to the other character in the same mark.",
+    "Embossing Missing": "The required embossed mark is entirely absent from its designated location, with no trace of the expected characters."
   },
   "feature_keys": [
     "area_frac",
@@ -34,135 +52,174 @@
   ],
   "norm": {
     "mean": [
-      0.1729081081081081,
-      136.19000000000003,
-      39.65945945945944,
-      21.668648648648645,
-      10.662162162162161,
-      0.006154054054054054,
-      996.3959459459462,
-      0.5509459459459459,
-      30.64864864864865,
-      48.60243243243242,
-      0.06700810810810812,
-      11.224864864864868,
-      46.33027027027026
+      0.17092432432432428,
+      135.41513513513516,
+      40.49378378378377,
+      21.939729729729734,
+      10.720270270270271,
+      0.0075567567567567575,
+      922.3632432432433,
+      0.5267837837837838,
+      57.32432432432432,
+      46.65297297297299,
+      0.042202702702702696,
+      11.922162162162163,
+      50.64270270270269
     ],
     "std": [
-      0.08617720705232716,
-      24.26580543714784,
-      12.01651834856209,
-      13.411906602507717,
-      6.031845280444199,
-      0.014948842395652284,
-      858.1476105824858,
-      0.2256044069372551,
-      26.327681677241806,
-      12.412979999244776,
-      0.03792405197288874,
-      3.0502420122163834,
-      12.713818931337897
+      0.08569091662545704,
+      24.073667078435722,
+      11.332742410725,
+      13.457520651632535,
+      6.059331194244838,
+      0.018027704513384778,
+      819.7110320636041,
+      0.22378333333287997,
+      50.65039369343756,
+      11.823791833569885,
+      0.025226578502953356,
+      3.851846966688126,
+      10.503892367001875
     ]
   },
   "centroids": {
-    "Black Mark After Electroplating": [
-      0.19336666666666666,
-      164.05833333333337,
-      31.623333333333335,
-      26.123333333333335,
-      16.566666666666666,
-      0.0206,
-      1226.1266666666668,
-      0.6295000000000001,
-      28.5,
-      56.17166666666666,
-      0.08553333333333335,
-      11.768333333333333,
-      40.57833333333334
+    "Dent": [
+      0.16895000000000002,
+      133.05624999999998,
+      54.70000000000001,
+      12.88125,
+      6.950000000000001,
+      0.000175,
+      274.40624999999994,
+      0.38112500000000005,
+      21.625,
+      49.44375,
+      0.0536625,
+      9.8675,
+      55.63875
     ],
-    "Electroplating Defect": [
-      0.2443,
-      173.62,
-      34.26,
-      8.75,
-      6.38,
-      0.0355,
-      2678.95,
-      0.912,
-      110.0,
-      58.7,
-      0.112,
-      16.03,
-      40.07
+    "Out-of-Round": [
+      0.3198,
+      123.59,
+      37.41,
+      19.42,
+      9.48,
+      0.0001,
+      102.29,
+      0.336,
+      8.0,
+      44.15,
+      0.0744,
+      4.28,
+      44.36
     ],
-    "Incomplete Embossing": [
-      0.09035,
-      142.47,
-      32.215,
-      36.17,
-      14.81,
-      0.00055,
-      2184.56,
-      0.877,
-      24.0,
-      52.754999999999995,
-      0.061149999999999996,
-      13.565,
-      31.775
-    ],
-    "Line Defect": [
-      0.21311999999999998,
-      138.56400000000002,
-      28.410000000000004,
-      24.378000000000004,
-      12.145999999999999,
-      0.01208,
-      1877.6580000000001,
-      0.5861999999999999,
-      37.6,
-      51.269999999999996,
-      0.08674,
-      15.264,
-      46.484
-    ],
-    "Serration": [
-      0.2345,
-      158.92,
-      24.0,
-      18.6,
-      9.28,
-      0.0033,
-      2172.56,
-      0.559,
-      84.0,
-      49.09,
-      0.0447,
-      10.12,
-      27.61
+    "Corrosion": [
+      0.16796666666666668,
+      111.47333333333331,
+      50.97,
+      12.513333333333334,
+      5.543333333333333,
+      6.666666666666667e-05,
+      430.83,
+      0.39233333333333337,
+      31.333333333333332,
+      43.71333333333333,
+      0.033,
+      11.01,
+      52.34
     ],
     "OK": [
-      0.13369999999999999,
-      122.19200000000001,
-      38.5,
-      26.340999999999998,
-      10.738,
-      0.00021000000000000004,
-      731.0939999999999,
-      0.5890000000000001,
-      25.8,
-      42.077,
-      0.06507,
-      9.886,
-      46.061
+      0.13564,
+      121.276,
+      39.264,
+      26.475999999999992,
+      10.732,
+      0.00027,
+      619.8149999999999,
+      0.5293,
+      54.5,
+      42.631,
+      0.04764,
+      10.072,
+      51.387
+    ],
+    "Dark Marks": [
+      0.19371428571428573,
+      164.42428571428567,
+      33.220000000000006,
+      24.085714285714285,
+      15.334285714285713,
+      0.02762857142857143,
+      1241.3285714285714,
+      0.654,
+      79.28571428571429,
+      54.715714285714284,
+      0.03844285714285715,
+      13.235714285714286,
+      43.86571428571428
+    ],
+    "Line Mark": [
+      0.20825999999999997,
+      137.494,
+      30.119999999999997,
+      25.168,
+      12.398,
+      0.014180000000000002,
+      1608.012,
+      0.5444,
+      75.8,
+      39.768,
+      0.01892,
+      17.442,
+      52.932
+    ],
+    "Serration Missing": [
+      0.2345,
+      158.65,
+      27.08,
+      19.07,
+      9.19,
+      0.0093,
+      2519.72,
+      0.843,
+      168.0,
+      48.2,
+      0.024,
+      12.43,
+      35.07
+    ],
+    "Incomplete/Shallow Embossing": [
+      0.08035,
+      139.025,
+      33.745000000000005,
+      36.745,
+      14.55,
+      0.0007999999999999999,
+      2545.09,
+      0.7464999999999999,
+      99.5,
+      49.480000000000004,
+      0.04735,
+      15.93,
+      53.315
     ]
   },
   "counts": {
-    "Black Mark After Electroplating": 6,
-    "Electroplating Defect": 1,
-    "Incomplete Embossing": 2,
-    "Line Defect": 5,
-    "Serration": 1,
-    "OK": 10
+    "Dent": 8,
+    "Out-of-Round": 1,
+    "Corrosion": 3,
+    "OK": 10,
+    "Fine Dark Speckling": 0,
+    "Dark Speckling": 0,
+    "Dark Marks": 7,
+    "Dark Speckle Cluster": 0,
+    "Medium Burn": 0,
+    "Dark Burn": 0,
+    "Line Mark": 5,
+    "Serration Missing": 1,
+    "White Mark": 0,
+    "Incomplete/Shallow Embossing": 2,
+    "Embossing Missing": 0
   },
   "parts": {
     "Bearing Cup": {
@@ -172,12 +229,11 @@
       "OK": 6
     },
     "Bracket": {
-      "Line Defect": 5,
+      "Line Mark": 5,
       "OK": 4,
-      "Incomplete Embossing": 2,
-      "Serration": 1,
-      "Black Mark After Electroplating": 6,
-      "Electroplating Defect": 1
+      "Incomplete/Shallow Embossing": 2,
+      "Serration Missing": 1,
+      "Dark Marks": 7
     }
   },
   "thresholds": {
@@ -193,29 +249,43 @@
   },
   "confusions": [
     [
-      "Electroplating Defect",
-      "Incomplete Embossing",
+      "Corrosion",
+      "shadow/plating tint"
+    ],
+    [
+      "Dark Marks",
+      "Dark Speckling",
       "OK"
     ],
     [
-      "Serration",
+      "Dark Marks",
+      "shadow/plating tint"
+    ],
+    [
+      "Incomplete/Shallow Embossing",
+      "Embossing Missing"
+    ],
+    [
+      "Serration Missing",
       "splined-hole (design, not a defect)"
     ],
     [
-      "Black Mark After Electroplating",
-      "shadow/plating tint"
+      "White Mark",
+      "glare/plating tint"
+    ],
+    [
+      "Dark Speckling",
+      "surface grain/plating texture"
     ]
   ],
   "lessons": {
-    "version": 1,
-    "updated_at": "2026-09-06T21:45:00",
-    "note": "Durable lessons learned from human corrections. Loaded into defect_kb.json on every rebuild so inspection never loses them. Covers the free-form Bearing Cup part (deep-drawn collar/cup) which has NO ground-truth polygons.",
+    "note": "Assembled from knowledge/rules/<part>.json - edit those files, not this.",
     "parts": {
       "Bearing Cup": {
         "description": "Deep-drawn metal bearing cup: outer flange (rolled edge), a stepped inner rim/collar, and a central bore. Photographed top-down (rim visible as a ring) or tilted (side view, rim foreshortened).",
         "signatures": {
+          "Dent": "Use Dent as the single bearing-cup edge/rim damage category for any localised edge, rim, collar, or flange damage.",
           "Out-of-Round": "Central bore is not a clean circle - one side pinched, dented inward or ovalised (out-of-round).",
-          "Dent": "Use Dent as the single bearing-cup edge/rim damage category for localised edge, rim, collar, or flange damage.",
           "Corrosion": "Brown/orange mottled corrosion or rust on the drawn wall or face.",
           "OK": "Smooth continuous outer flange, unbroken inner rim curve, round bore, no discrete dark mark, no missing material."
         },
@@ -225,72 +295,85 @@
           "Scan the ENTIRE part for EVERY defect type seen anywhere in the set - full outer edge, inner rim, both flanges and faces. Never stop at the first finding.",
           "A defect type seen on one cup (e.g. flange cut on 162340) must be looked for on ALL cups - cross-apply learned defect types.",
           "Capture MULTIPLE defects per image and rank them; mark the highest-severity one as PRIMARY."
-        ],
-        "severity_priority": {
-          "P4": [
-            "deformation",
-            "dent",
-            "cut",
-            "missing material",
-            "torn",
-            "crack",
-            "broken",
-            "out-of-round",
-            "pinched",
-            "bent"
-          ],
-          "P3": [
-            "serration",
-            "incomplete embossing"
-          ],
-          "P2": [
-            "rust",
-            "electroplat",
-            "black mark",
-            "line defect",
-            "scratch"
-          ],
-          "P1": [
-            "dark mark",
-            "stain"
-          ],
-          "default": 2
-        }
+        ]
       },
       "Bracket": {
-        "description": "Electroplated / surface-finished bracket part. Inspect the plated surface, embossed features and edges. Uses domain-standard electroplating/surface-finish defect names.",
+        "description": "Flat stamped steel mounting bracket/strap. Two plain round through-holes at the top and center for bolts or pivot pins. One bottom hole has internal serrations/splines designed to mate with a matching serrated pin, bolt, or clip nut to resist rotation once assembled. 'VA' is embossed into the surface.",
         "signatures": {
-          "Black Mark After Electroplating": "Dark/black blemish left on the surface after the electroplating process; darker than the surrounding plated finish.",
-          "Electroplating Defect": "A flaw in the electroplated finish - uneven, pitted, blistered, dull or missing plating.",
-          "Incomplete Embossing": "Embossed feature is not fully formed - shallow, partial or missing impression versus a fully struck emboss.",
-          "Line Defect": "A long straight line/streak flaw running across the surface.",
-          "Serration": "Saw-tooth / jagged serrated deformation along an edge.",
-          "OK": "Uniform plated finish, fully-formed embossing, clean straight edges, no marks, lines or serrations."
+          "Fine Dark Speckling": "Sparse, sub-millimeter dark pixels/dots scattered individually across the plated surface. Each speck is barely larger than the surface grain texture and stays darker than the surrounding grain.",
+          "Dark Speckling": "A denser, more visible scatter of small dark dots covering a localized patch. The dots are still individually resolvable, but the patch visibly dulls the local reflectivity.",
+          "Dark Marks": "Discrete, irregular dark blemishes that are not dot-based. They appear as smudges, streaks, or small blotches with defined but non-geometric boundaries. Covers generic post-electroplating dark/plating blemishes.",
+          "Dark Speckle Cluster": "Multiple dark-speckling patches that coalesce or sit adjacent to one another, forming a larger irregular zone of degraded plating along an edge or corner.",
+          "Medium Burn": "A visibly darkened matte-to-charred area with a defined edge, where plating quality has broken down but base metal is not fully exposed.",
+          "Dark Burn": "A sharply bordered solid black or near-black patch where plating has failed or burned through, often exposing bare or oxidized base metal.",
+          "Line Mark": "A thin continuous straight or near-straight linear trace running across the plated surface. Straightness and continuity matter more than orientation.",
+          "Serration Missing": "The designated serrated hole appears as a smooth round bore instead of a repeating tooth/scallop profile.",
+          "White Mark": "A localized irregular pale patch that looks duller and less lustrous than the surrounding chromate finish. It reads as a loss of shine or color, not added debris.",
+          "Incomplete/Shallow Embossing": "A stamped or embossed alphanumeric character is incompletely formed, shallow, faint, or illegible relative to the other character in the same mark.",
+          "Embossing Missing": "The required embossed mark is entirely absent from its designated location, with no trace of the expected characters.",
+          "OK": "Continuous smooth bracket geometry with no dark speckling, dark marks, burns, line marks, serration loss, white marks, or embossing defects."
         },
         "confirmed_rulings": [
-          "Scan the ENTIRE part for EVERY defect type - full plated surface, embossed features and all edges. Never stop at the first finding.",
-          "Cross-apply learned defect types: a defect seen on one bracket must be looked for on ALL brackets.",
-          "Capture MULTIPLE defects per image and rank them; mark the highest-severity one as PRIMARY."
-        ],
-        "severity_priority": {
-          "P3": [
-            "incomplete embossing",
-            "serration"
-          ],
-          "P2": [
-            "electroplat",
-            "electroplating defect",
-            "black mark",
-            "line defect"
-          ],
-          "default": 2
-        }
+          "The part has exactly 3 holes: two plain round smooth-bore holes and one serrated splined/toothed-bore hole. Only the designated serrated hole is evaluated for tooth presence; a plain hole is supposed to be smooth.",
+          "Identify the serrated hole first as the fixed anatomical anchor before checking anything else. Locate all other features relative to it, never relative to the image frame.",
+          "If the designated serrated hole shows a smooth fully round bore instead of a scalloped/toothed edge, flag Serration Missing. Compare it to the part's own plain holes in the same image; if it looks identical to them, serration is missing.",
+          "The 'VA' embossing sits in the gap between the middle hole and the plain end-hole, on the side of the middle hole opposite the serrated hole. Never search for it on the serrated-hole side of the middle hole, regardless of image rotation or flip.",
+          "If the embossing zone is completely blank with no character relief, flag Embossing Missing. If at least one character is present but clearly shallower or fainter than the other character in the same mark, flag Incomplete/Shallow Embossing instead. These are mutually exclusive.",
+          "Before flagging Embossing Missing, rule out glare, shadow, dirt, or an out-of-frame crop over that zone. Only flag it when the zone is clearly visible, in focus, and unobstructed.",
+          "White Mark means a pale, dull, low-luster patch where the underlying brushed/machining grain is still visible through it. Do not confuse it with dark burns or dark speckling, which are darker than the surroundings.",
+          "Dark surface defects escalate by fill pattern and edge sharpness: fine dark speckling -> dark speckling -> dark marks -> dark speckle cluster -> medium burn -> dark burn. Classify by the highest-matching tier, not the lowest.",
+          "Line Mark is a long thin continuous straight or gently curved line, often spanning a large fraction of the part length and crossing over holes or embossing without breaking. A scratch is short, localized, and confined to one small zone.",
+          "When a line mark crosses a hole, keep it as one continuous defect box spanning the full visible length. Do not split it into separate boxes on either side of the hole.",
+          "Scan the ENTIRE part for EVERY defect type defined for this part family on every image: full outer profile, all three holes, both faces, and the embossing zone. Never stop after the first defect.",
+          "A defect type confirmed on one sample must be actively checked on all other samples in the set. Cross-apply every learned defect type across the full batch.",
+          "Capture multiple defects per image where present and list all of them; do not report only the most obvious one.",
+          "Ignore any defect finding below 60% confidence. Do not annotate or report it, but note if a borderline 55-60% case deserves a second look.",
+          "A part is OK only if it passes every checkpoint simultaneously: profile, both plain holes, serration presence, embossing presence/location/quality, plating uniformity, absence of white marks, absence of line marks/scratches, and absence of cracks/rust.",
+          "If confirmed defects are found in more than 10% of the images/parts in a batch, recommend rejecting the lot."
+        ]
       }
     },
+    "confusions": [
+      [
+        "Corrosion",
+        "shadow/plating tint"
+      ],
+      [
+        "Dark Marks",
+        "Dark Speckling",
+        "OK"
+      ],
+      [
+        "Dark Marks",
+        "shadow/plating tint"
+      ],
+      [
+        "Incomplete/Shallow Embossing",
+        "Embossing Missing"
+      ],
+      [
+        "Serration Missing",
+        "splined-hole (design, not a defect)"
+      ],
+      [
+        "White Mark",
+        "glare/plating tint"
+      ],
+      [
+        "Dark Speckling",
+        "surface grain/plating texture"
+      ]
+    ],
     "segmentation_gotchas": [
       "edge/Canny segmentation on a small feature that sits ON a bright curved rim will LOCK ONTO THE RIM and trace a long arc instead of the feature. For small rim defects, use a TINY tight box and DROP edge-seg (draw a plain rectangle). Root cause of repeated 'mask too big / wrong spot' complaints.",
       "dark segmentation grabs the shadowed rim, not the actual stain, when the box is loose. Shrink the box below/away from the rim so the stain is the darkest pixel region.",
       "Always place boxes tiny and tight on the actual defect, then verify each output at full zoom before reporting."
+    ],
+    "recurring_mistakes": [
+      "Stopping at the first defect per image instead of scanning the whole part.",
+      "Not cross-applying a defect type seen on one image to the others.",
+      "Misreading shallow cuts / dark marks as the part's natural pressed shape.",
+      "Placing boxes from downscaled previews and not verifying at full resolution."
     ],
     "confirmed_defects_by_image": {
       "IMG20260824161530": [
@@ -314,12 +397,6 @@
       "IMG20260824161920": [
         "Deformation (pinched / out-of-round bore, PRIMARY P4)"
       ]
-    },
-    "recurring_mistakes": [
-      "Stopping at the first defect per image instead of scanning the whole part.",
-      "Not cross-applying a defect type seen on one image to the others.",
-      "Misreading shallow cuts / dark marks as the part's natural pressed shape.",
-      "Placing boxes from downscaled previews and not verifying at full resolution."
-    ]
+    }
   }
 }

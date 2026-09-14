@@ -5,7 +5,7 @@
     "image": "dataset/train/images/IMG20260824163740_jpg.rf.31ed13c7621f1282f2be1c521d4bb146.jpg",
     "defects": [
       {
-        "category": "Line Defect",
+        "category": "Line Mark",
         "points": [
           [
             0.451389,
@@ -34,7 +34,7 @@
     "image": "dataset/train/images/IMG20260824163750_jpg.rf.81d7c07fb9071693260dde3dc1d7de02.jpg",
     "defects": [
       {
-        "category": "Line Defect",
+        "category": "Line Mark",
         "points": [
           [
             0.625,
@@ -279,7 +279,7 @@
     "image": "dataset/train/images/IMG20260824163810_jpg.rf.2b7505af8f2e57850f1d5c030f76ff98.jpg",
     "defects": [
       {
-        "category": "Line Defect",
+        "category": "Line Mark",
         "points": [
           [
             0.4583333333333333,
@@ -558,7 +558,7 @@
     "image": "dataset/train/images/IMG20260824164116_jpg.rf.147ad101aac84f99058c94b05721177c.jpg",
     "defects": [
       {
-        "category": "Incomplete Embossing",
+        "category": "Incomplete/Shallow Embossing",
         "points": [
           [
             0.5162037037037037,
@@ -680,7 +680,7 @@
         "reason": "dataset ground-truth annotation"
       },
       {
-        "category": "Incomplete Embossing",
+        "category": "Incomplete/Shallow Embossing",
         "points": [
           [
             0.6097263249348392,
@@ -713,7 +713,7 @@
     "image": "dataset/train/images/IMG20260824164209_jpg.rf.7bb7d0a5ee38a66a41834432c15a5c84.jpg",
     "defects": [
       {
-        "category": "Incomplete Embossing",
+        "category": "Incomplete/Shallow Embossing",
         "points": [
           [
             0.27314814814814814,
@@ -830,7 +830,7 @@
     "image": "dataset/train/images/IMG20260824164648_jpg.rf.a7c6de74e96374bfa08f7cfcb7f128a3.jpg",
     "defects": [
       {
-        "category": "Serration",
+        "category": "Serration Missing",
         "points": [
           [
             0.18981481481481483,
@@ -963,7 +963,7 @@
     "image": "dataset/train/images/IMG20260824164818_jpg.rf.69624d6ed4a5a8fcf0268fbeda8be863.jpg",
     "defects": [
       {
-        "category": "Black Mark After Electroplating",
+        "category": "Dark Marks",
         "points": [
           [
             0.32407407407407407,
@@ -1036,7 +1036,7 @@
     "image": "dataset/train/images/IMG20260824164838_jpg.rf.0840aeacb511d26fe3392adfe7022c2b.jpg",
     "defects": [
       {
-        "category": "Black Mark After Electroplating",
+        "category": "Dark Marks",
         "points": [
           [
             0.5859319880418534,
@@ -1077,7 +1077,7 @@
     "image": "dataset/train/images/IMG20260824164950_jpg.rf.7137a89466d6b0a53e1a97ef8891bc3e.jpg",
     "defects": [
       {
-        "category": "Black Mark After Electroplating",
+        "category": "Dark Marks",
         "points": [
           [
             0.3958333333333333,
@@ -1150,7 +1150,7 @@
     "image": "dataset/train/images/IMG20260824165050_jpg.rf.3d59361773104d85ef93c0179d18bf86.jpg",
     "defects": [
       {
-        "category": "Black Mark After Electroplating",
+        "category": "Dark Marks",
         "points": [
           [
             0.3680555555555556,
@@ -1275,7 +1275,7 @@
     "image": "dataset/train/images/IMG20260824165106_jpg.rf.d0affafeebaeb7a1c990c1f2db8c4433.jpg",
     "defects": [
       {
-        "category": "Black Mark After Electroplating",
+        "category": "Dark Marks",
         "points": [
           [
             0.4837962962962963,
@@ -1376,7 +1376,7 @@
     "image": "dataset/train/images/IMG20260824165152_jpg.rf.e7ce1b0fbbb7f5df3e678d334b755bf6.jpg",
     "defects": [
       {
-        "category": "Black Mark After Electroplating",
+        "category": "Dark Marks",
         "points": [
           [
             0.4863541666666667,
@@ -1409,7 +1409,7 @@
     "image": "dataset/train/images/IMG20260824165247_jpg.rf.e7bf8fb268ee19dda939a586015ad544.jpg",
     "defects": [
       {
-        "category": "Electroplating Defect",
+        "category": "Dark Marks",
         "points": [
           [
             0.384278647463995,
@@ -1446,7 +1446,7 @@
     "image": "dataset/valid/images/IMG20260824163734_jpg.rf.5480542a6492f419a2f442e2ed7e66b3.jpg",
     "defects": [
       {
-        "category": "Line Defect",
+        "category": "Line Mark",
         "points": [
           [
             0.6550925925925926,
@@ -1709,7 +1709,7 @@
     "image": "dataset/valid/images/IMG20260824164510_jpg.rf.47740777f195b6b03f4f2bec9822399b.jpg",
     "defects": [
       {
-        "category": "Line Defect",
+        "category": "Line Mark",
         "points": [
           [
             0.5324074074074074,

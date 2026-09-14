@@ -166,9 +166,11 @@ python qms.py build
 The next inspection of that image (or a near-duplicate) resolves instantly with
 zero tokens.
 
-To add a **new part**, create `inspection_state/reviews/<new_part>.json` (same schema)
-and register the part + its defects in `inspection_state/knowledge/taxonomy.json`.
-No code changes needed.
+To add a **new part**, create `inspection_state/reviews/<new_part>.json` (human
+markings, same schema) and one rule file `inspection_state/knowledge/rules/<new_part>.json`
+that defines the part's defects (name, severity, color, aliases, signature),
+confirmed rulings and confusions - all in that single file. Then run
+`python qms.py train` and `python qms.py build`. No code changes needed.
 
 ---
 
@@ -179,6 +181,7 @@ qms.py                     single CLI (train | build | inspect | serve | stats)
 inspector/
   settings.py              paths + tunables (env-overridable)
   taxonomy.py              central parts/defects/severity/colors loader
+  part_rules.py            loads the per-part rule files (rules/<part>.json)
   image_features.py        OpenCV feature extraction + perceptual hash
   knowledge_base.py        SQLite inspection memory + knowledge cache
   renderer.py              draws defect masks / labels / banners
@@ -189,7 +192,7 @@ inspector/
   live_trainer.py          runtime add/correct used by the REST API
   web_api.py               Flask REST server (offline)
 inspection_state/
-  knowledge/              taxonomy.json, lessons.json, corrections.json
+  knowledge/              rules/<part>.json (one file per part), corrections.json
   reviews/                 bearing_cup.json, bracket.json (human markings)
   models/best.pt           the packed model
   data/inspection_memory.db durable learned memory
@@ -201,7 +204,7 @@ inspection_state/
 - `inspection_state/data/` - local runtime data, including the main SQLite database
 - `inspection_state/data/inspection_memory.db` - durable learning memory and prior inspection history
 - `inspection_state/reviews/` - human-reviewed sample annotations for each part
-- `inspection_state/knowledge/` - taxonomy, defect definitions, and training guidance
+- `inspection_state/knowledge/` - per-part rule files (`rules/<part>.json`: defects, severity, rulings) and training guidance
 - `inspection_state/models/` - built inspection model package used for offline inference
 - `inspect_out/` - generated annotated inspection outputs
 - `needs_review/` - images that did not match confidently and need human review

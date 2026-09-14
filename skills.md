@@ -122,7 +122,7 @@ Already updated:
 Current user/domain preference:
 
 - The old manual-mark category is not a real defect category for this project
-- Remove that legacy category from taxonomy, lessons, training data, and model artifacts
+- Remove that legacy category from the part rule file (`knowledge/rules/<part>.json`), training data, and model artifacts
 - Do not show or train manual-mark / reject-paint categories in the UI
 
 ### Dent category simplification
@@ -142,7 +142,7 @@ Current user/domain preference:
 - `inspector\trainer.py` - training review data
 - `inspector\knowledge_base.py` - SQLite learned exemplars
 - `reviews\bearing_cup.json`
-- `knowledge\taxonomy.json`
+- `knowledge\rules\bearing_cup.json` - one rule file per part (defects, severity, rulings, confusions)
 
 ## Working rules for future sessions
 

@@ -92,8 +92,8 @@ def main():
                 for d in e.get("defects", [])]
     ok, unknown = TAX.validate(all_cats)
     if not ok:
-        print("ERROR: categories not in knowledge/taxonomy.json:", sorted(set(unknown)))
-        print("Add them to taxonomy.json (or fix the spelling) and re-run.")
+        print("ERROR: defect names not registered in any knowledge/rules/<part>.json:", sorted(set(unknown)))
+        print("Add them to the part's rules/<part>.json (or fix the spelling) and re-run.")
         sys.exit(1)
 
     added = skipped = missing = 0

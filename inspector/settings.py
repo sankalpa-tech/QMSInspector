@@ -56,6 +56,12 @@ LESSONS_PATH = os.path.join(KNOWLEDGE_DIR, "lessons.json")
 CORRECTIONS_PATH = os.path.join(KNOWLEDGE_DIR, "corrections.json")
 CACHE_PATH = os.path.join(KNOWLEDGE_DIR, "defect_kb.json")
 
+# --- per-part rule files (the ONE file a developer edits per part) ---
+# Each rules/<part>.json fully describes a part: its defects (name, severity,
+# color, aliases, signature), confirmed rulings, confusions and gotchas. Add a
+# new part by dropping a new <part>.json here, then run: python qms.py build.
+RULES_DIR = os.environ.get("QMS_RULES_DIR", os.path.join(KNOWLEDGE_DIR, "rules"))
+
 # --- per-part human markings (one <part>.json per part) ---
 REVIEWS_DIR = os.path.join(STATE_DIR, "reviews")
 
@@ -89,5 +95,5 @@ def get_logger(name="qms"):
 def ensure_dirs():
     for d in (DATA_DIR, OUT_DIR, NEEDS_REVIEW_DIR,
               os.path.dirname(MODEL_PATH), os.path.dirname(DB_PATH),
-              KNOWLEDGE_DIR, REVIEWS_DIR):
+              KNOWLEDGE_DIR, RULES_DIR, REVIEWS_DIR):
         os.makedirs(d, exist_ok=True)

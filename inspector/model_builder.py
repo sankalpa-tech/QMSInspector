@@ -25,6 +25,7 @@ from . import knowledge_base as kb
 from . import image_features as F
 from . import renderer as A
 from . import taxonomy as TAX
+from . import part_rules
 from . import settings
 
 OUT_PT = settings.MODEL_PATH
@@ -45,11 +46,15 @@ def _reviews():
 
 
 def _lessons():
+    if part_rules.available():
+        return part_rules.build_lessons()
     p = settings.LESSONS_PATH
     return json.load(open(p)) if os.path.exists(p) else {}
 
 
 def _taxonomy():
+    if part_rules.available():
+        return part_rules.build_taxonomy()
     p = settings.TAXONOMY_PATH
     return json.load(open(p)) if os.path.exists(p) else {}
 
@@ -66,6 +71,15 @@ def _count(xs):
     for x in xs:
         d[x] = d.get(x, 0) + 1
     return d
+
+
+def _canonicalize_defects(defects):
+    out = []
+    for defect in defects or []:
+        item = dict(defect)
+        item["category"] = TAX.canonical(item.get("category", ""))
+        out.append(item)
+    return out
 
 
 def build():
@@ -94,7 +108,7 @@ def build():
     for b, entry in review.items():
         geometry[b] = {"part": entry.get("part", "default"),
                        "result": entry.get("result"),
-                       "defects": entry.get("defects", [])}
+                       "defects": _canonicalize_defects(entry.get("defects", []))}
 
     ckpt = {
         "format": "qms-defect-knn",

@@ -130,15 +130,32 @@ def copy_release_artifacts(tag: str, manifest_path: Path) -> None:
     shutil.rmtree(bundle_dir, ignore_errors=True)
 
 
+def next_dated_tag(out_dir: Path) -> str:
+    """Return v<YYYY-MM-DD>.N, auto-incrementing N for the current date."""
+    date = datetime.now(timezone.utc).strftime("v%Y-%m-%d")
+    n = 1
+    if out_dir.exists():
+        used = []
+        for child in out_dir.iterdir():
+            if child.is_dir() and child.name.startswith(date + "."):
+                suffix = child.name[len(date) + 1:]
+                if suffix.isdigit():
+                    used.append(int(suffix))
+        if used:
+            n = max(used) + 1
+    return f"{date}.{n}"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Create a versioned inspection release snapshot")
-    parser.add_argument("--tag", default=None, help="Release tag, e.g. v2026-09-14")
+    parser.add_argument("--tag", default=None,
+                        help="Release tag (default: auto v<YYYY-MM-DD>.N, incrementing N per date)")
     parser.add_argument("--out-dir", default="releases", help="Directory to store the release snapshot")
     args = parser.parse_args()
 
-    tag = args.tag or datetime.now(timezone.utc).strftime("v%Y-%m-%d-%H%MZ")
     out_dir = ROOT / args.out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
+    tag = args.tag or next_dated_tag(out_dir)
     snapshot_dir = out_dir / tag
     snapshot_dir.mkdir(parents=True, exist_ok=True)
 

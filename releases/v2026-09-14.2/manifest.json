@@ -1,7 +1,7 @@
 {
-  "release": "v2026-09-14",
-  "created_at_utc": "2026-09-13T21:02:45Z",
-  "git_commit": "1f0363f74f0a01835aa5b601843223e4a844a785",
+  "release": "v2026-09-14.2",
+  "created_at_utc": "2026-09-14T12:25:14Z",
+  "git_commit": "04975dfec9d5ef711ab529a30d879cb0bd437354",
   "root": ".",
   "source_bundle": [
     "inspection_state/reviews",
@@ -12,7 +12,7 @@
   "files": [
     {
       "path": "inspection_state/data/inspection_memory.db",
-      "sha256": "1bf7fd414698124ea812b2d0354f3dbf24bb338042b8101da24e1077c7418b58",
+      "sha256": "65c1596fd9e1dcf7bb12d2aac068099c936fa7744d556e0e25c1288b1c32cce3",
       "size_bytes": 49152
     },
     {
@@ -22,23 +22,23 @@
     },
     {
       "path": "inspection_state/knowledge/defect_kb.json",
-      "sha256": "7547e312cc3722390a05914bec568dfef7e9fb25a724fe719723c408cd02e8c9",
-      "size_bytes": 10908
+      "sha256": "0ae1be226de04460ac25bee7febae515940b4418115a487d5e246ea8f4d346e7",
+      "size_bytes": 17759
     },
     {
-      "path": "inspection_state/knowledge/lessons.json",
-      "sha256": "213f5a8a1362949e30aa1ff3a18e96aff56b9c34b241a5b49cad5c8f85ee81e4",
-      "size_bytes": 5389
+      "path": "inspection_state/knowledge/rules/bearing_cup.json",
+      "sha256": "05188574a571a085bd1748ceea137983a3ad79286427287cd82e62717fe2ba85",
+      "size_bytes": 3881
     },
     {
-      "path": "inspection_state/knowledge/taxonomy.json",
-      "sha256": "fab493205b5f5e60737fb88a5d854ff299bee342e1595e6999540e55541646fb",
-      "size_bytes": 2945
+      "path": "inspection_state/knowledge/rules/bracket.json",
+      "sha256": "6e0842acc3b5a2347dea6dd63aa0174f6a5b2e1dd73cb80e0b9704c9154cf589",
+      "size_bytes": 8100
     },
     {
       "path": "inspection_state/models/best.pt",
-      "sha256": "5f755c238367cb8d196dfde2c9545a027f5d5b18300a601b1885aaf72f02756a",
-      "size_bytes": 42310
+      "sha256": "93b7308b70d5bb134bd0d984368d3edd9eae22112b9d7948508499dfd8c8cdbe",
+      "size_bytes": 51974
     },
     {
       "path": "inspection_state/reviews/bearing_cup.json",
@@ -47,8 +47,8 @@
     },
     {
       "path": "inspection_state/reviews/bracket.json",
-      "sha256": "948bf7c98d2daf90ef675e4c531a948f0b53df9256c601fe1d47ff4bbab16c5b",
-      "size_bytes": 48777
+      "sha256": "e9c5698953ae82f704173df5a31130a8d6cebc1f1ea88fa97538b0d4ca9df16f",
+      "size_bytes": 48662
     }
   ]
 }

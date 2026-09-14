@@ -3,7 +3,8 @@
 Renders every defect from a verdict/review entry: filled overlay + locator box +
 severity-tagged label, with the highest-severity defect marked PRIMARY. Handles
 both polygon (`points`) and box (`bbox` [+ optional `seg` method]) geometry.
-Defect names, colors and severity come centrally from knowledge/taxonomy.json.
+Defect names, colors and severity come centrally from the per-part rule files
+(knowledge/rules/<part>.json) via taxonomy.py.
 """
 from __future__ import annotations
 import os
@@ -15,7 +16,7 @@ from . import taxonomy as TAX
 
 COLORS = TAX.colors_map()
 FALLBACK = TAX.FALLBACK_COLOR
-# Severity is centrally controlled in knowledge/taxonomy.json (via taxonomy.py).
+# Severity is centrally controlled in the per-part rule files (via taxonomy.py).
 SEVERITY_RULES = TAX.severity_rules()
 
 

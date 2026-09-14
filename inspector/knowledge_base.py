@@ -4,6 +4,12 @@
 - knowledge_base/defect_kb.json : the human+machine readable cache. It holds
   per-category text signatures, decision thresholds, feature centroids and
   normalization stats. `rebuild_cache` regenerates it from the exemplars.
+
+Defect names/severity/colors and part-specific rulings/signatures/confusions
+all come from ONE rule file per part (knowledge/rules/<part>.json, via
+part_rules + taxonomy.py). Nothing about a part's defect vocabulary is hardcoded
+here - add a new part or defect by editing that single file, then run
+`python qms.py build`.
 """
 from __future__ import annotations
 import os
@@ -14,29 +20,16 @@ import numpy as np
 
 from . import image_features as F
 from . import settings
+from . import part_rules
+from . import taxonomy as TAX
 
 DB_PATH = settings.DB_PATH
 CACHE_PATH = settings.CACHE_PATH
 LESSONS_PATH = settings.LESSONS_PATH
 
-CATEGORIES = [
-    "Black Mark After Electroplating",
-    "Electroplating Defect",
-    "Incomplete Embossing",
-    "Line Defect",
-    "Serration",
-    "OK",
-]
-
-# Human-authored visual signatures (seeded from the reference analysis).
-SIGNATURES = {
-    "Black Mark After Electroplating": "Discrete dark/black smudge or spot sitting on top of otherwise normal plating; local darkening not explained by shadow.",
-    "Electroplating Defect": "Patch of abnormal/uneven plating - dull, matte or rough area where the finish did not deposit uniformly.",
-    "Incomplete Embossing": "Stamped 'VA' logo is partial, faint or missing strokes; low central relief contrast.",
-    "Line Defect": "A single distinct straight scratch/gouge line crossing the surface, standing out from the normal brushed micro-texture.",
-    "Serration": "Jagged/toothed edge on a hole that should be smooth (NOT the by-design splined bottom hole).",
-    "OK": "Uniform finish, complete emboss, no discrete mark/line, smooth round hole edges.",
-}
+# Defect vocabulary is centrally sourced from the per-part rule files
+# (knowledge/rules/<part>.json) via taxonomy.py.
+CATEGORIES = list(TAX.DEFECT_NAMES)
 
 
 def _now():
@@ -148,13 +141,15 @@ def add_feedback(inspection_id, true_label, note=""):
 
 
 def load_lessons():
-    """Durable, human+machine readable lessons learned from human corrections.
+    """Durable, human+machine readable lessons for each part.
 
-    Kept in knowledge/lessons.json so it survives every cache rebuild. Holds
-    per-part visual signatures, confirmed rulings, the severity-priority map,
-    segmentation gotchas and per-image confirmed defects for the free-form parts
-    that are not covered by the fixed-category centroids.
+    Assembled from the per-part rule files (knowledge/rules/<part>.json) so a
+    developer edits one file per part. Holds per-part visual signatures,
+    confirmed rulings, known confusions and segmentation gotchas. Falls back to
+    the legacy knowledge/lessons.json only if no rule files are present.
     """
+    if part_rules.available():
+        return part_rules.build_lessons()
     if os.path.exists(LESSONS_PATH):
         try:
             with open(LESSONS_PATH) as f:
@@ -164,11 +159,28 @@ def load_lessons():
     return {}
 
 
+def _signature_map(lessons):
+    """Seed cache signatures from taxonomy, then fill any gaps from part lessons."""
+    signatures = {}
+    for name in TAX.DEFECT_NAMES:
+        desc = TAX.description(name)
+        if desc:
+            signatures[name] = desc
+    for part in lessons.get("parts", {}).values():
+        for raw_name, text in part.get("signatures", {}).items():
+            canonical = TAX.canonical(raw_name)
+            if canonical in TAX.DEFECTS and canonical not in signatures and text:
+                signatures[canonical] = text
+    return signatures
+
+
 def rebuild_cache():
     """Recompute per-category centroids + normalization from exemplars -> cache JSON."""
     rows = all_exemplars(confirmed_only=True)
+    lessons = load_lessons()
+    categories = list(TAX.DEFECT_NAMES)
     keys = F.FEATURE_KEYS
-    by_cat = {c: [] for c in CATEGORIES}
+    by_cat = {c: [] for c in categories}
     mat = []
     for r in rows:
         v = json.loads(r["features_json"])
@@ -198,20 +210,16 @@ def rebuild_cache():
     cache = {
         "version": 2,
         "updated_at": _now(),
-        "categories": CATEGORIES,
-        "signatures": SIGNATURES,
+        "categories": categories,
+        "signatures": _signature_map(lessons),
         "feature_keys": keys,
         "norm": {"mean": list(mean), "std": list(std)},
         "centroids": centroids,
         "counts": counts,
         "parts": parts,
         "thresholds": _default_thresholds(),
-        "confusions": [
-            ["Electroplating Defect", "Incomplete Embossing", "OK"],
-            ["Serration", "splined-hole (design, not a defect)"],
-            ["Black Mark After Electroplating", "shadow/plating tint"],
-        ],
-        "lessons": load_lessons(),
+        "confusions": lessons.get("confusions", []),
+        "lessons": lessons,
     }
     os.makedirs(os.path.dirname(CACHE_PATH), exist_ok=True)
     with open(CACHE_PATH, "w") as f:

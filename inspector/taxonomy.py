@@ -1,7 +1,9 @@
-"""Central taxonomy loader - the ONE place that reads knowledge/taxonomy.json.
+"""Central defect taxonomy loader.
 
 Every module gets part names, defect names, severity and colors from here, so
-the taxonomy is centrally controlled: edit knowledge/taxonomy.json only.
+defect registration stays centralized. The source of truth is one rule file per
+part (knowledge/rules/<part>.json, loaded via part_rules); if no rule files are
+present it falls back to the legacy knowledge/taxonomy.json.
 
 Public API:
     PARTS, DEFAULT_PART, DEFECT_NAMES
@@ -17,9 +19,13 @@ from __future__ import annotations
 import json
 
 from . import settings
+from . import part_rules
 
-with open(settings.TAXONOMY_PATH, encoding="utf-8") as _fh:
-    _TAX = json.load(_fh)
+if part_rules.available():
+    _TAX = part_rules.build_taxonomy()
+else:
+    with open(settings.TAXONOMY_PATH, encoding="utf-8") as _fh:
+        _TAX = json.load(_fh)
 
 DEFECTS = _TAX["defects"]
 PARTS = _TAX.get("parts", [])
